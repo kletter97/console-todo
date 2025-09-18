@@ -3,8 +3,6 @@
 Task::Task()
 {
     setName("Unnamed Task");
-    setStartDate(Date());
-    setEndDate(Date());
     setStatus(false);
 }
 Task::Task(const std::string inName, const Date& inEndName)
