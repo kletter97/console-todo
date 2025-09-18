@@ -7,7 +7,7 @@ Date::Date()
     auto today = std::chrono::floor<std::chrono::days>(now);
     std::chrono::year_month_day ymd = std::chrono::year_month_day{today};
     setYear((int)ymd.year());
-    setMonth((unsigned)ymd.month());
+    setMonth((unsigned)ymd.month()-1);
     setDay((unsigned)ymd.day());
     monthsNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 }
