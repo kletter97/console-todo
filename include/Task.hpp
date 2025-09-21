@@ -12,7 +12,7 @@ class Task
         bool isCompleted;
     public:
         Task();
-        Task(const std::string inName, const Date& inEndName);
+        Task(const std::string inName, const Date& inEndDate);
         std::string getName() const;
         Date getStartDate() const;
         Date getEndDate() const;
@@ -20,7 +20,7 @@ class Task
         void setName(const std::string newName);
         void setStartDate(const Date& newDate);
         void setEndDate(const Date& newDate);
-        bool setStatus(const bool newStatus);
+        void setStatus(const bool newStatus);
 };
 
 #endif //TASK_H

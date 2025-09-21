@@ -1,5 +1,8 @@
 #include "Date.hpp"
 #include <chrono>
+#include <vector>
+#include <string>
+#include <iostream>
 
 Date::Date()
 {
@@ -39,7 +42,7 @@ void Date::setDay(const unsigned newDay)
 }
 void Date::setMonth(const unsigned newMonth)
 {
-    if(newMonth==0 || newMonth>12) throw std::invalid_argument("month cannot be zero or bigger than 12");
+    if(newMonth<0 || newMonth>11) throw std::invalid_argument("month cannot be negative or bigger than 11");
     if(day > daysInMonths[newMonth]) day = 1;
     month = newMonth;
 }
