@@ -1,5 +1,6 @@
 #include "TaskManager.hpp"
 #include <iostream>
+#include <array>
 
 TaskManager::TaskManager()
 {
@@ -9,9 +10,12 @@ TaskManager::TaskManager(bool mode)
 {
     // just for testing the class without import/export tasks (those methods are not created so far)
     Task* testTask = new Task;
-    Folder* testFolder = new Folder;
-    testFolder->addTask(testTask);
-    Folders.push_back(testFolder);
+    Folder* testFolder1 = new Folder;
+    Folder* testFolder2 = new Folder;
+    testFolder1->addTask(testTask);
+    testFolder2->addTask(testTask);
+    Folders.push_back(testFolder1);
+    Folders.push_back(testFolder2);
 }
 void TaskManager::parseInput(std::string input)
 {
@@ -104,6 +108,26 @@ std::vector<Task*> TaskManager::getTasksFromFolder(std::string folderName)
     }
     throw std::invalid_argument("folder \""+folderName+"\" not found");
 }
+void TaskManager::printDelimeter(int nameLength, int mode)
+{
+    std::array<std::string, 3> s;
+    switch(mode)
+    {
+        case 0: s = {"┏","┳","┓"}; break;
+        case 1: s = {"┣","╋","┫"}; break;
+        case 2: s = {"┗","┻","┛"}; break;
+        default: throw std::invalid_argument("printDelimeter: mode should be 0, 1 or 2, not "+std::to_string(mode));
+    }
+    std::cout << s[0];
+    for(int i=0; i<nameLength+2; ++i) std::cout << "━";
+    std::cout << s[1];
+    for(int i=0; i<8; ++i) std::cout << "━";
+    std::cout << s[1];
+    for(int i=0; i<20; ++i) std::cout << "━";
+    std::cout << s[1];
+    for(int i=0; i<20; ++i) std::cout << "━";
+    std::cout << s[2] << std::endl;
+}
 void TaskManager::printAllTasks()
 {
     // statusLength = 6 ("Status"), any dateLength = 18 ("September DD, YYYY")
@@ -115,38 +139,46 @@ void TaskManager::printAllTasks()
             if(task->getName().length() > nameLength) nameLength = task->getName().length();
         }
     }
-
+    printDelimeter(nameLength, 0);
     //Upper bar output, format: | Name | Status | Due | Created |
-    std::cout << "| Name ";
+    std::cout << "┃ Name ";
     for(int i=0; i<nameLength-4; ++i) std::cout << " ";
-    std::cout << "| Status | Due ";
+    std::cout << "┃ Status ┃ Due ";
     for(int i=0; i<15; ++i) std::cout << " ";
-    std::cout << "| Created ";
+    std::cout << "┃ Created ";
     for(int i=0; i<11; ++i) std::cout << " ";
-    std::cout << "|" << std::endl;
+    std::cout << "┃" << std::endl;
 
     for(Folder* folder : Folders)
     {
-        std::cout << folder->getName() << std::endl;
+        printDelimeter(nameLength, 1);
+
+        //Folder header output
+        std::cout << "\033[30;47m " << folder->getName();
+        for(int i=0; i<nameLength+54-(folder->getName().length()); ++i) std::cout << " ";
+        std::cout << "\033[0m" << std::endl;
+
         for(Task* task : folder->getTasks())
         {
+            printDelimeter(nameLength, 1);
             // name output
-            std::cout << "| " << task->getName();
+            std::cout << "┃ " << task->getName();
             for(int i=0; i<nameLength-task->getName().length()+1; ++i) std::cout << " ";
             // status output
-            std::cout << "| ";
+            std::cout << "┃ ";
             if(task->getStatus()) std::cout << "Done ";
             else std::cout << "Undone ";
             // deadline (endDate) output
-            std::cout << "| " << task->getEndDate().print();
+            std::cout << "┃ " << task->getEndDate().print();
             for(int i=0; i<19-(task->getEndDate().print().length()); ++i) std::cout << " ";
             // creation date (startDate) output
-            std::cout << "| " << task->getStartDate().print();
+            std::cout << "┃ " << task->getStartDate().print();
             for(int i=0; i<19-(task->getStartDate().print().length()); ++i) std::cout << " ";
-            // final "|" output
-            std::cout << "| " << std::endl;
+            // final "┃" output
+            std::cout << "┃ " << std::endl;
         }
     }
+    printDelimeter(nameLength, 2);
 }
 void TaskManager::printTasks(std::vector<Task*> tasks)
 {
@@ -155,31 +187,34 @@ void TaskManager::printTasks(std::vector<Task*> tasks)
     {
         if(task->getName().length() > nameLength) nameLength = task->getName().length();
     }
+    printDelimeter(nameLength, 0);
     //Upper bar output, format: | Name | Status | Due | Created |
-    std::cout << "| Name ";
+    std::cout << "┃ Name ";
     for(int i=0; i<nameLength-4; ++i) std::cout << " ";
-    std::cout << "| Status | Due ";
+    std::cout << "┃ Status | Due ";
     for(int i=0; i<15; ++i) std::cout << " ";
-    std::cout << "| Created ";
-    for(int i=0; i<12; ++i) std::cout << " ";
-    std::cout << "|" << std::endl;
+    std::cout << "┃ Created ";
+    for(int i=0; i<11; ++i) std::cout << " ";
+    std::cout << "┃" << std::endl;
 
     for(Task* task : tasks)
     {
+        printDelimeter(nameLength, 1);
         // name output
-        std::cout << "| " << task->getName();
-        for(int i=0; i<nameLength-task->getName().length(); ++i) std::cout << " ";
+        std::cout << "┃ " << task->getName();
+        for(int i=0; i<nameLength-task->getName().length()+1; ++i) std::cout << " ";
         // status output
-        std::cout << "| ";
-        if(task->getStatus()) std::cout << "Done";
-        else std::cout << "Undone";
+        std::cout << "┃ ";
+        if(task->getStatus()) std::cout << "Done ";
+        else std::cout << "Undone ";
         // deadline (endDate) output
-        std::cout << "| " << task->getEndDate().print();
-        for(int i=0; i<18-(task->getEndDate().print().length()); ++i) std::cout << " ";
+        std::cout << "┃ " << task->getEndDate().print();
+        for(int i=0; i<19-(task->getEndDate().print().length()); ++i) std::cout << " ";
         // creation date (startDate) output
-        std::cout << "| " << task->getStartDate().print();
-        for(int i=0; i<18-(task->getStartDate().print().length()); ++i) std::cout << " ";
-        // final "|" output
-        std::cout << "| " << std::endl;
+        std::cout << "┃ " << task->getStartDate().print();
+        for(int i=0; i<19-(task->getStartDate().print().length()); ++i) std::cout << " ";
+        // final "┃" output
+        std::cout << "┃ " << std::endl;
     }
+    printDelimeter(nameLength, 2);
 }

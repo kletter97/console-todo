@@ -8,6 +8,7 @@ class TaskManager
 {
     private:
         std::vector<Folder*> Folders;
+        void printDelimeter(int nameLength, int mode);
     public:
         TaskManager();
         TaskManager(bool mode);

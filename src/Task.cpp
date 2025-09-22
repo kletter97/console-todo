@@ -3,7 +3,7 @@
 
 Task::Task()
 {
-    name = "kirogaz";
+    name = "testTask";
     setStatus(false);
     //setStartDate(Date());
     //setEndDate(Date());

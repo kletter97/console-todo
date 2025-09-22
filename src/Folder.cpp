@@ -2,7 +2,7 @@
 
 Folder::Folder()
 {
-    name = "New Folder";
+    name = "Folder-1";
 }
 Folder::Folder(const std::string inName, bool mode)
 {
