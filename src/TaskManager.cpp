@@ -36,7 +36,7 @@ void TaskManager::parseInput(std::string input)
         if(words[1]=="all") printAllTasks();
         else if(words[1]=="date" || words[1]=="folder")
         {
-            if(words[1]=="date") tasksForDisplay = getTasksByDate(stoi(words[2]), stoi(words[3]), stoi(words[4]));
+            if(words[1]=="date") tasksForDisplay = getTasksByDate(stoi(words[2]), stoi(words[3])-1, stoi(words[4]));
             else if(words[1]=="folder") tasksForDisplay = getTasksFromFolder(words[2]);
             printTasks(tasksForDisplay);
         }
@@ -55,6 +55,7 @@ void TaskManager::parseInput(std::string input)
                 targetTask->setEndDate(newDate);
             }
         }
+        else throw std::invalid_argument("unknown display command: "+words[1]);
     }
 }
 void TaskManager::readTasks()
@@ -191,7 +192,7 @@ void TaskManager::printTasks(std::vector<Task*> tasks)
     //Upper bar output, format: | Name | Status | Due | Created |
     std::cout << "┃ Name ";
     for(int i=0; i<nameLength-4; ++i) std::cout << " ";
-    std::cout << "┃ Status | Due ";
+    std::cout << "┃ Status ┃ Due ";
     for(int i=0; i<15; ++i) std::cout << " ";
     std::cout << "┃ Created ";
     for(int i=0; i<11; ++i) std::cout << " ";
