@@ -9,11 +9,12 @@ class CTDInfo
         static constexpr const char* name = "ConsoleToDo";
         static constexpr const char* version = "inDev";
         static constexpr const char* description = "";
-        static constexpr const char* logo =    "┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ inDev\n\
-                                                ┃ ╻ ┣━━━┳━━━┳━━━┳━━━┫ ┣━┻━┓ ┏━┻━┫ ╻ ┣━━━┓\n\
-                                                ┃ ┣━┫ ╻ ┃ ╻ ┃ ╺━┫ ╻ ┃ ┃ ╺ ┃ ┃ ╻ ┃ ┃ ┃ ╻ ┃\n\
-                                                ┃ ╹ ┃ ╹ ┃ ┃ ┣━╸ ┃ ╹ ┃ ┃ ╺━┫ ┃ ╹ ┃ ╹ ┃ ╹ ┃\n\
-                                                ┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛";
+        static constexpr const char* logo = \
+R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ inDev
+┃ ╻ ┣━━━┳━━━┳━━━┳━━━┫ ┣━┻━┓ ┏━┻━┫ ╻ ┣━━━┓
+┃ ┣━┫ ╻ ┃ ╻ ┃ ╺━┫ ╻ ┃ ┃ ╺ ┃ ┃ ╻ ┃ ┃ ┃ ╻ ┃
+┃ ╹ ┃ ╹ ┃ ┃ ┣━╸ ┃ ╹ ┃ ┃ ╺━┫ ┃ ╹ ┃ ╹ ┃ ╹ ┃
+┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛)";
         CTDInfo() {}
         static const std::string getInfoText()
         {

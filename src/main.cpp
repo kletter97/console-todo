@@ -2,28 +2,14 @@
 #include <fstream>
 #include "TaskManager.hpp"
 
-void printLogo()
-{
-    std::ifstream in("resources/logo.txt");;
-    std::string output;
-    if (in.is_open())
-    {
-        while (std::getline(in, output))
-        {
-            std::cout << output << std::endl;
-        }
-    }
-    in.close();
-}
-
 int main()
 {
     
-    std::string command;
-    printLogo();
+    std::string command ;
     Date date((unsigned)29, (unsigned)2, 2027), curDate;
     Task task("Example Task", date);
     TaskManager testTM;
+    testTM.printLogo();
     testTM.printAllTasks();
     while(true)
     {
