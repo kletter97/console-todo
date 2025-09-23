@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <array>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 TaskManager::TaskManager()
 {
@@ -9,7 +12,8 @@ TaskManager::TaskManager()
     catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
     if(Folders.size()==0)
     {
-        Folder* General = new Folder;
+        std::cout << "NOTE: No tasks found, created an empty folder \"General\".\n";
+        Folder* General = new Folder("General");
         Folders.push_back(General);
     }
 }
@@ -142,8 +146,8 @@ void TaskManager::saveTasks()
     std::ofstream list("tasks/list.ctdfs"), out;
     for(Folder* folder : Folders)
     {
+        if (!fs::exists("tasks")) if (fs::create_directories("tasks")) std::cout << "NOTE: Created \"tasks/\" for saving tasks." << std::endl;
         out.open("tasks/"+folder->getName()+".ctdf");
-        //out.open("tasks/test2.ctdf");
         list << "tasks/"+folder->getName()+".ctdf\n";
         out << "folder=" << folder->getName() << "\nnext\n";
         for(Task* task : folder->getTasks())

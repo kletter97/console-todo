@@ -13,7 +13,7 @@ class Folder
         std::vector<Task*> Tasks;
     public:
         Folder();
-        Folder(const std::string inName, bool mode);
+        Folder(const std::string inName);
         std::string getName() const;
         std::vector<Task*> getTasks() const;
         void setName(const std::string newName);

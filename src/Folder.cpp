@@ -4,10 +4,9 @@ Folder::Folder()
 {
     name = "Folder-1";
 }
-Folder::Folder(const std::string inName, bool mode)
+Folder::Folder(const std::string inName)
 {
-    if(!mode) name = inName;
-    else; //ToDo: import from JSON
+    name = inName;
 }
 std::string Folder::getName() const
 {
