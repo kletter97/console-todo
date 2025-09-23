@@ -47,6 +47,12 @@ class CTDInfo
                 Syntax: about\n\
                 Arguments: there\'s no arguments for this command";
             }
+            else if(command=="exit")
+            {
+                return "Description: \"exit\" saves your tasks and exiting safely.\n\
+                Syntax: exit\n\
+                Arguments: there\'s no arguments for this command";
+            }
             else if(command=="all")
             {
                 return "Here\'s a list of commands supported by this version:\n\
@@ -54,6 +60,7 @@ class CTDInfo
                 \t- edit;\n\
                 \t- help;\n\
                 \t- about;\n\
+                \t- exit;\n\
                 type \"help <command_name> to get more information about specific command";
             }
             else return "Command is not found or there\'s no description for this command.";

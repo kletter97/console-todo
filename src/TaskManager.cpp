@@ -5,7 +5,13 @@
 
 TaskManager::TaskManager()
 {
-    readTasks();
+    try {readTasks();}
+    catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
+    if(Folders.size()==0)
+    {
+        Folder* General = new Folder;
+        Folders.push_back(General);
+    }
 }
 TaskManager::TaskManager(bool mode)
 {
@@ -41,7 +47,7 @@ void TaskManager::parseInput(std::string input)
             else if(words[1]=="folder") tasksForDisplay = getTasksFromFolder(words[2]);
             printTasks(tasksForDisplay);
         }
-        else throw std::invalid_argument("unknown display command: "+words[1]);
+        else throw std::invalid_argument("unknown \"display\" argument: "+words[1]);
     }
     else if(words[0]=="edit")
     {
@@ -56,10 +62,17 @@ void TaskManager::parseInput(std::string input)
                 targetTask->setEndDate(newDate);
             }
         }
-        else throw std::invalid_argument("unknown display command: "+words[1]);
+        else throw std::invalid_argument("unknown \"edit\" argument: "+words[1]);
     }
     else if(words[0]=="about") std::cout << ctdinfo.getInfoText() << "\n";
     else if(words[0]=="help") std::cout << ctdinfo.getHelp(words[1]) << "\n";
+    else if(words[0]=="exit")
+    {
+        std::cout << "saving your tasks..." << "\n";
+        saveTasks();
+        std::exit(0);
+    }
+    else throw std::invalid_argument("unknown command: "+words[0]);
 }
 void TaskManager::readTasks()
 {
@@ -138,7 +151,8 @@ void TaskManager::saveTasks()
             for(int i=0; i<2-std::to_string(task->getEndDate()->getMonth()).length(); i++) out << "0";
             out << task->getEndDate()->getMonth();
             for(int i=0; i<4-std::to_string(task->getEndDate()->getYear()).length(); i++) out << "0";
-            if(task != folder->getTasks().back()) out << task->getEndDate()->getYear() << "\nnext\n";
+            out << task->getEndDate()->getYear();
+            if(task != folder->getTasks().back()) out << "\nnext\n";
         }
         out.close();
     }
