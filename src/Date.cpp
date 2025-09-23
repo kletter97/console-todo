@@ -55,7 +55,7 @@ void Date::setYear(const int newYear)
 }
 void Date::move(int days)
 {
-    if(day+days>0 && day+days<=daysInMonths[month]) day += days; return;
+    if(day+days>0 && day+days<=daysInMonths[month]) {day += days; return;}
     if(day+days>daysInMonths[month])
     {
         int diff = day+days-daysInMonths[month];

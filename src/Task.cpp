@@ -19,13 +19,13 @@ std::string Task::getName() const
 {
     return name;
 }
-Date Task::getStartDate() const
+Date* Task::getStartDate()
 {
-    return startDate;
+    return &startDate;
 }
-Date Task::getEndDate() const
+Date* Task::getEndDate()
 {
-    return endDate;
+    return &endDate;
 }
 bool Task::getStatus() const
 {

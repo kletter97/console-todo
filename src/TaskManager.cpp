@@ -1,10 +1,11 @@
 #include "TaskManager.hpp"
 #include <iostream>
+#include <fstream>
 #include <array>
 
 TaskManager::TaskManager()
 {
-    ;
+    readTasks();
 }
 TaskManager::TaskManager(bool mode)
 {
@@ -48,7 +49,7 @@ void TaskManager::parseInput(std::string input)
         if(words[2]=="name") targetTask->setName(words[3]);
         else if(words[2]=="date")
         {
-            if(words[3][0]=='+' || words[3][0]=='-') targetTask->getEndDate().move(stoi(words[3]));
+            if(words[3][0]=='+' || words[3][0]=='-') targetTask->getEndDate()->move(stoi(words[3]));
             else
             {
                 Date newDate((unsigned)stoi(words[3]), (unsigned)stoi(words[4]), stoi(words[5]));
@@ -60,11 +61,85 @@ void TaskManager::parseInput(std::string input)
 }
 void TaskManager::readTasks()
 {
-    ; //ToDo: read tasks from file
+    std::ifstream list("tasks/list.ctdfs"), currentFile;
+    std::string currentFileName, currentStr, fieldName, fieldVal;
+    Folder* currentFolder;
+    Task* currentTask;
+    bool flag = 0;
+    if(list.is_open()) while (std::getline(list, currentFileName))
+        {
+            currentFile.open(currentFileName);
+            if(currentFile.is_open())
+            {
+                currentFolder = new Folder;
+                Folders.push_back(currentFolder);
+                while (std::getline(currentFile, currentStr))
+                {
+                    if(currentStr=="next")
+                    {
+                        currentTask = new Task;
+                        currentFolder->addTask(currentTask);
+                    }
+                    else
+                    {
+                        flag = 0;
+                        for(int i=0; i<(int)currentStr.size(); i++)
+                        {
+                            if(currentStr[i]=='=')
+                            {
+                                fieldName = currentStr.substr(0, i);
+                                fieldVal = currentStr.substr(i+1);
+                                flag = 1;
+                            }
+                        }
+                        if(!flag) throw std::invalid_argument("File \""+currentFileName+"\" contains invalid string \""+currentStr+"\"");
+                        if(fieldName=="folder") currentFolder->setName(fieldVal);
+                        else if(fieldName=="name") currentTask->setName(fieldVal);
+                        else if(fieldName=="sdate")
+                        {
+                            Date date(stoi(fieldVal.substr(0,2)), stoi(fieldVal.substr(2,2)), stoi(fieldVal.substr(4)));
+                            currentTask->setStartDate(date);
+                        }
+                        else if(fieldName=="edate")
+                        {
+                            Date date(stoi(fieldVal.substr(0,2)), stoi(fieldVal.substr(2,2)), stoi(fieldVal.substr(4)));
+                            currentTask->setEndDate(date);
+                        }
+                    }
+                }
+            }
+        }
+    list.close();
 }
 void TaskManager::saveTasks()
 {
-    ; //ToDo: save tasks to file
+    std::ofstream list("tasks/list.ctdfs"), out;
+    for(Folder* folder : Folders)
+    {
+        out.open("tasks/"+folder->getName()+".ctdf");
+        //out.open("tasks/test2.ctdf");
+        list << "tasks/"+folder->getName()+".ctdf\n";
+        out << "folder=" << folder->getName() << "\nnext\n";
+        for(Task* task : folder->getTasks())
+        {
+            out << "name=" << task->getName() << "\n";
+            out << "sdate=";
+            for(int i=0; i<2-std::to_string(task->getStartDate()->getDay()).length(); i++) out << "0";
+            out << task->getStartDate()->getDay();
+            for(int i=0; i<2-std::to_string(task->getStartDate()->getMonth()).length(); i++) out << "0";
+            out << task->getStartDate()->getMonth();
+            for(int i=0; i<4-std::to_string(task->getStartDate()->getYear()).length(); i++) out << "0";
+            out << task->getStartDate()->getYear() << "\n";
+            out << "edate=";
+            for(int i=0; i<2-std::to_string(task->getEndDate()->getDay()).length(); i++) out << "0";
+            out << task->getEndDate()->getDay();
+            for(int i=0; i<2-std::to_string(task->getEndDate()->getMonth()).length(); i++) out << "0";
+            out << task->getEndDate()->getMonth();
+            for(int i=0; i<4-std::to_string(task->getEndDate()->getYear()).length(); i++) out << "0";
+            if(task != folder->getTasks().back()) out << task->getEndDate()->getYear() << "\nnext\n";
+        }
+        out.close();
+    }
 }
 Task* TaskManager::getTaskByName(std::string taskname)
 {
@@ -96,7 +171,7 @@ std::vector<Task*> TaskManager::getTasksByDate(int day, int month, int year)
     {
         for(Task* task : folder->getTasks())
         {
-            if(task->getEndDate().getDay()==day && task->getEndDate().getMonth()==month && task->getEndDate().getYear()==year) ret.push_back(task);
+            if(task->getEndDate()->getDay()==day && task->getEndDate()->getMonth()==month && task->getEndDate()->getYear()==year) ret.push_back(task);
         }
     }
     return ret;
@@ -170,11 +245,11 @@ void TaskManager::printAllTasks()
             if(task->getStatus()) std::cout << "Done ";
             else std::cout << "Undone ";
             // deadline (endDate) output
-            std::cout << "┃ " << task->getEndDate().print();
-            for(int i=0; i<19-(task->getEndDate().print().length()); ++i) std::cout << " ";
+            std::cout << "┃ " << task->getEndDate()->print();
+            for(int i=0; i<19-(task->getEndDate()->print().length()); ++i) std::cout << " ";
             // creation date (startDate) output
-            std::cout << "┃ " << task->getStartDate().print();
-            for(int i=0; i<19-(task->getStartDate().print().length()); ++i) std::cout << " ";
+            std::cout << "┃ " << task->getStartDate()->print();
+            for(int i=0; i<19-(task->getStartDate()->print().length()); ++i) std::cout << " ";
             // final "┃" output
             std::cout << "┃ " << std::endl;
         }
@@ -209,11 +284,11 @@ void TaskManager::printTasks(std::vector<Task*> tasks)
         if(task->getStatus()) std::cout << "Done ";
         else std::cout << "Undone ";
         // deadline (endDate) output
-        std::cout << "┃ " << task->getEndDate().print();
-        for(int i=0; i<19-(task->getEndDate().print().length()); ++i) std::cout << " ";
+        std::cout << "┃ " << task->getEndDate()->print();
+        for(int i=0; i<19-(task->getEndDate()->print().length()); ++i) std::cout << " ";
         // creation date (startDate) output
-        std::cout << "┃ " << task->getStartDate().print();
-        for(int i=0; i<19-(task->getStartDate().print().length()); ++i) std::cout << " ";
+        std::cout << "┃ " << task->getStartDate()->print();
+        for(int i=0; i<19-(task->getStartDate()->print().length()); ++i) std::cout << " ";
         // final "┃" output
         std::cout << "┃ " << std::endl;
     }

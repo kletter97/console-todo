@@ -25,7 +25,7 @@ int main()
     //std::cout << "Date: " << curDate.print() << std::endl;
     Task task("Example Task", date);
     //std::cout << "Task: " << task.getName() << ", End Date: " << task.getEndDate().print().length() << std::endl;
-    TaskManager testTM(true);
+    TaskManager testTM;
     testTM.printAllTasks();
     //puts("this should be before error");
     //testTM.getTaskByName("kirogaz")->getEndDate().print();
@@ -34,6 +34,7 @@ int main()
         std::cout << "console-todo> ";
         getline(std::cin, command);
         testTM.parseInput(command);
+        testTM.saveTasks();
     }
     return 0;
 }

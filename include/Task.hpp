@@ -14,8 +14,8 @@ class Task
         Task();
         Task(const std::string inName, const Date& inEndDate);
         std::string getName() const;
-        Date getStartDate() const;
-        Date getEndDate() const;
+        Date* getStartDate();
+        Date* getEndDate();
         bool getStatus() const;
         void setName(const std::string newName);
         void setStartDate(const Date& newDate);
