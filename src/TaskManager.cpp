@@ -120,6 +120,7 @@ void TaskManager::readTasks()
                         if(!flag) throw std::invalid_argument("File \""+currentFileName+"\" contains invalid string \""+currentStr+"\"");
                         if(fieldName=="folder") currentFolder->setName(fieldVal);
                         else if(fieldName=="name") currentTask->setName(fieldVal);
+                        else if(fieldName=="status") currentTask->setStatus(stoi(fieldVal));
                         else if(fieldName=="sdate")
                         {
                             Date date(stoi(fieldVal.substr(0,2)), stoi(fieldVal.substr(2,2)), stoi(fieldVal.substr(4)));
@@ -148,6 +149,7 @@ void TaskManager::saveTasks()
         for(Task* task : folder->getTasks())
         {
             out << "name=" << task->getName() << "\n";
+            out << "status=" << (int)(task->getStatus()) << "\n";
             out << "sdate=";
             for(int i=0; i<2-std::to_string(task->getStartDate()->getDay()).length(); i++) out << "0";
             out << task->getStartDate()->getDay();
