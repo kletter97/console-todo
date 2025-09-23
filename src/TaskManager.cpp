@@ -64,6 +64,16 @@ void TaskManager::parseInput(std::string input)
         }
         else throw std::invalid_argument("unknown \"edit\" argument: "+words[1]);
     }
+    else if(words[0]=="done")
+    {
+        Task* targetTask = getTaskByName(words[1]);
+        targetTask->setStatus(true);
+    }
+    else if(words[0]=="undone")
+    {
+        Task* targetTask = getTaskByName(words[1]);
+        targetTask->setStatus(false);
+    }
     else if(words[0]=="about") std::cout << ctdinfo.getInfoText() << "\n";
     else if(words[0]=="help") std::cout << ctdinfo.getHelp(words[1]) << "\n";
     else if(words[0]=="exit")
@@ -253,12 +263,14 @@ void TaskManager::printAllTasks()
         for(Task* task : folder->getTasks())
         {
             printDelimeter(nameLength, 1);
+            // if task is done, it'll be printed gray, if undone - standart (white)
+            if(task->getStatus()) std::cout << "\033[90m";
             // name output
             std::cout << "┃ " << task->getName();
             for(int i=0; i<nameLength-task->getName().length()+1; ++i) std::cout << " ";
             // status output
             std::cout << "┃ ";
-            if(task->getStatus()) std::cout << "Done ";
+            if(task->getStatus()) std::cout << "Done   ";
             else std::cout << "Undone ";
             // deadline (endDate) output
             std::cout << "┃ " << task->getEndDate()->print();
@@ -267,7 +279,7 @@ void TaskManager::printAllTasks()
             std::cout << "┃ " << task->getStartDate()->print();
             for(int i=0; i<19-(task->getStartDate()->print().length()); ++i) std::cout << " ";
             // final "┃" output
-            std::cout << "┃ " << std::endl;
+            std::cout << "┃ \033[0m" << std::endl;
         }
     }
     printDelimeter(nameLength, 2);
@@ -297,7 +309,7 @@ void TaskManager::printTasks(std::vector<Task*> tasks)
         for(int i=0; i<nameLength-task->getName().length()+1; ++i) std::cout << " ";
         // status output
         std::cout << "┃ ";
-        if(task->getStatus()) std::cout << "Done ";
+        if(task->getStatus()) std::cout << "Done   ";
         else std::cout << "Undone ";
         // deadline (endDate) output
         std::cout << "┃ " << task->getEndDate()->print();

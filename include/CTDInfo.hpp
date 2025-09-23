@@ -53,6 +53,12 @@ class CTDInfo
                 Syntax: exit\n\
                 Arguments: there\'s no arguments for this command";
             }
+            else if(command=="done" || command=="undone")
+            {
+                return "Description: \"done\"/\"undone\" is a command to mark selected task done or undone.\n\
+                Syntax: done/undone <task_name>\n\
+                Arguments: there\'s no arguments for this command";
+            }
             else if(command=="all")
             {
                 return "Here\'s a list of commands supported by this version:\n\
