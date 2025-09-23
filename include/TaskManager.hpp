@@ -2,12 +2,14 @@
 #define TM_H
 
 #include "Folder.hpp"
+#include "CTDInfo.hpp"
 #include <vector>
 
 class TaskManager
 {
     private:
         std::vector<Folder*> Folders;
+        CTDInfo ctdinfo;
         void printDelimeter(int nameLength, int mode);
     public:
         TaskManager();
@@ -21,6 +23,7 @@ class TaskManager
         std::vector<Task*> getTasksFromFolder(std::string folderName);
         void printAllTasks();
         void printTasks(std::vector<Task*> tasks);
+        void printLogo();
 };
 
 #endif

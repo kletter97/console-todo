@@ -58,6 +58,8 @@ void TaskManager::parseInput(std::string input)
         }
         else throw std::invalid_argument("unknown display command: "+words[1]);
     }
+    else if(words[0]=="about") std::cout << ctdinfo.getInfoText() << "\n";
+    else if(words[0]=="help") std::cout << ctdinfo.getHelp(words[1]) << "\n";
 }
 void TaskManager::readTasks()
 {
@@ -293,4 +295,8 @@ void TaskManager::printTasks(std::vector<Task*> tasks)
         std::cout << "┃ " << std::endl;
     }
     printDelimeter(nameLength, 2);
+}
+void TaskManager::printLogo()
+{
+    std::cout << ctdinfo.logo << "\n";
 }

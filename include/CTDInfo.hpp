@@ -1,0 +1,70 @@
+#ifndef CTDINFO_H
+#define CTDINFO_H
+
+#include <string>
+
+class CTDInfo
+{
+    public:
+        static constexpr const char* name = "ConsoleToDo";
+        static constexpr const char* version = "inDev";
+        static constexpr const char* description = "";
+        static constexpr const char* logo =    "┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ inDev\n\
+                                                ┃ ╻ ┣━━━┳━━━┳━━━┳━━━┫ ┣━┻━┓ ┏━┻━┫ ╻ ┣━━━┓\n\
+                                                ┃ ┣━┫ ╻ ┃ ╻ ┃ ╺━┫ ╻ ┃ ┃ ╺ ┃ ┃ ╻ ┃ ┃ ┃ ╻ ┃\n\
+                                                ┃ ╹ ┃ ╹ ┃ ┃ ┣━╸ ┃ ╹ ┃ ┃ ╺━┫ ┃ ╹ ┃ ╹ ┃ ╹ ┃\n\
+                                                ┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛";
+        CTDInfo() {}
+        static const std::string getInfoText()
+        {
+            std::string ret = std::string(name) + ", version " + version + "\n" + description;
+
+            return ret;
+        }
+        static const char* getHelp(std::string& command)
+        {
+            if(command=="display")
+            {
+                return "Description: \"display\" shows a table with your tasks according to arguments.\n\
+                Syntax: display <arguments>\n\
+                Arguments:\n\
+                \tall: displays all tasks grouped by folders;\n\
+                \tdate <DD MM YYYY>: displays all tasks planned for selected day;\n\
+                \tfolder <folder_name>: displays all tasks in selected folder;\n";
+            }
+            else if(command=="edit")
+            {
+                return "Description: \"edit\" allows you to edit your tasks parameters: name and planned day.\n\
+                Syntax: edit <taskname> <arguments>\n\
+                Arguments:\n\
+                \tname <new_name>: changes name of the task to given;\n\
+                \tdate <DD MM YYYY>: sets planned date of selected task to given;\n\
+                \tdate <+/-day>: moves planned date for given days, to the future if \"+\", to the past if \"-\". WARNING: in this version this command works correctly only for -31<given_day<31;\n";
+            }
+            else if(command=="about")
+            {
+                return "Description: \"about\" shows main information about this software, such as name, version and description.\n\
+                Syntax: about\n\
+                Arguments: there\'s no arguments for this command";
+            }
+            else if(command=="all")
+            {
+                return "Here\'s a list of commands supported by this version:\n\
+                \t- display;\n\
+                \t- edit;\n\
+                \t- help;\n\
+                \t- about;\n\
+                type \"help <command_name> to get more information about specific command";
+            }
+            else return "Command is not found or there\'s no description for this command.";
+        }
+        ~CTDInfo()
+        {
+            delete [] name;
+            delete [] version;
+            delete [] description;
+            delete [] logo;
+        }
+};
+
+#endif
