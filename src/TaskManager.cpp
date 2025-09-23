@@ -68,6 +68,24 @@ void TaskManager::parseInput(std::string input)
         }
         else throw std::invalid_argument("unknown \"edit\" argument: "+words[1]);
     }
+    else if(words[0]=="new")
+    {
+        if(words[1]=="task")
+        {
+            Folder* targetFolder = getFolderByName(words[2]);
+            Task* newTask = new Task;
+            newTask->setName(words[3]);
+            Date* newDate = new Date((unsigned)stoi(words[4]), (unsigned)stoi(words[5]), stoi(words[6]));
+            newTask->setEndDate(*newDate);
+            targetFolder->addTask(newTask);
+        }
+        else if(words[1]=="folder")
+        {
+            Folder* newFolder = new Folder(words[2]);
+            Folders.push_back(newFolder);
+        }
+        else throw std::invalid_argument("unknown \"new\" argument: "+words[1]);
+    }
     else if(words[0]=="done")
     {
         Task* targetTask = getTaskByName(words[1]);
@@ -183,6 +201,14 @@ Task* TaskManager::getTaskByName(std::string taskname)
         }
     }
     throw std::invalid_argument("task \""+taskname+"\" not found");
+}
+Folder* TaskManager::getFolderByName(std::string foldername)
+{
+    for(Folder* folder : Folders)
+    {
+        if(folder->getName() == foldername) return folder;
+    }
+    throw std::invalid_argument("task \""+foldername+"\" not found");
 }
 std::vector<Task*> TaskManager::getAllTasks()
 {

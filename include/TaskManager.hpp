@@ -18,6 +18,7 @@ class TaskManager
         void readTasks();
         void saveTasks();
         Task* getTaskByName(std::string taskname);
+        Folder* getFolderByName(std::string foldername);
         std::vector<Task*> getAllTasks();
         std::vector<Task*> getTasksByDate(int day, int month, int year);
         std::vector<Task*> getTasksFromFolder(std::string folderName);

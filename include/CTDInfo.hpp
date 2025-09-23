@@ -8,6 +8,7 @@ class CTDInfo
     public:
         static constexpr const char* name = "ConsoleToDo";
         static constexpr const char* version = "inDev";
+        static constexpr const char* publicationDate = "24.9.2025";
         static constexpr const char* description = "";
         static constexpr const char* logo = \
 R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ inDev
@@ -31,7 +32,7 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 Arguments:\n\
                 \tall: displays all tasks grouped by folders;\n\
                 \tdate <DD MM YYYY>: displays all tasks planned for selected day;\n\
-                \tfolder <folder_name>: displays all tasks in selected folder;\n";
+                \tfolder <folder_name>: displays all tasks in selected folder.\n";
             }
             else if(command=="edit")
             {
@@ -40,19 +41,19 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 Arguments:\n\
                 \tname <new_name>: changes name of the task to given;\n\
                 \tdate <DD MM YYYY>: sets planned date of selected task to given;\n\
-                \tdate <+/-day>: moves planned date for given days, to the future if \"+\", to the past if \"-\". WARNING: in this version this command works correctly only for -31<given_day<31;\n";
+                \tdate <+/-day>: moves planned date for given days, to the future if \"+\", to the past if \"-\". WARNING: in this version this command works correctly only for -31<given_day<31.\n";
             }
             else if(command=="about")
             {
                 return "Description: \"about\" shows main information about this software, such as name, version and description.\n\
                 Syntax: about\n\
-                Arguments: there\'s no arguments for this command";
+                Arguments: there\'s no arguments for this command.";
             }
             else if(command=="exit")
             {
                 return "Description: \"exit\" saves your tasks and exiting safely.\n\
                 Syntax: exit\n\
-                Arguments: there\'s no arguments for this command";
+                Arguments: there\'s no arguments for this command.";
             }
             else if(command=="done" || command=="undone")
             {
@@ -68,7 +69,16 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 \t- help;\n\
                 \t- about;\n\
                 \t- exit;\n\
+                \t- new.\n\
                 type \"help <command_name> to get more information about specific command";
+            }
+            else if(command=="new")
+            {
+                return "Description: \"new\" creates new folder or task.\n\
+                Syntax: new <arguments>\n\
+                Arguments:\n\
+                \ttask <folder_name> <task_name> <DD MM YYYY>: creates a new task in selected folder with given name and planned date;\n\
+                \tfolder <folder_name>: creates a new folder with given name.\n";
             }
             else return "Command is not found or there\'s no description for this command.";
         }
@@ -77,6 +87,7 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
             delete [] name;
             delete [] version;
             delete [] description;
+            delete [] publicationDate;
             delete [] logo;
         }
 };
