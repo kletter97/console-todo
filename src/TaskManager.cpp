@@ -28,7 +28,7 @@ TaskManager::TaskManager(bool mode)
     Folders.push_back(testFolder1);
     Folders.push_back(testFolder2);
 }
-void TaskManager::parseInput(std::string input)
+void TaskManager::parseInput(const std::string& input)
 {
     std::vector<std::string> words;
     int oldi=-1, i;
@@ -86,6 +86,45 @@ void TaskManager::parseInput(std::string input)
         }
         else throw std::invalid_argument("unknown \"new\" argument: "+words[1]);
     }
+    else if(words[0]=="delete")
+    {
+        if(words[1]=="task")
+        {
+            Task* newTask = getTaskByName(words[2]);
+            Folder* targetFolder = getFolderByTask(newTask);
+            targetFolder->removeTask(newTask);
+        }
+        else if(words[1]=="folder")
+        {
+            Folder* targetFolder = getFolderByName(words[2]);
+            Folders.erase(std::find(Folders.begin(), Folders.end(), targetFolder));
+            std::vector<Task*> targetFolderTasks = getTasksFromFolder(targetFolder);
+            for(Task* deletableTask : targetFolderTasks) delete deletableTask;
+            delete targetFolder;
+        }
+        else if(words[1]=="done")
+        {
+            if(words[2]=="all")
+            {
+                std::vector<Task*> allTasks = getAllTasks();
+                for(Task* task : allTasks) if(task->getStatus()==true)
+                {
+                    Folder* folder = getFolderByTask(task);
+                    folder->removeTask(task);
+                }
+            }
+            else
+            {
+                Folder* folder = getFolderByName(words[2]);
+                for(Task* task : folder->getTasks()) if(task->getStatus()==true)
+                {
+                    Folder* folder = getFolderByTask(task);
+                    folder->removeTask(task);
+                }
+            }
+        }
+        else throw std::invalid_argument("unknown \"delete\" argument: "+words[1]);
+    }
     else if(words[0]=="done")
     {
         Task* targetTask = getTaskByName(words[1]);
@@ -118,6 +157,7 @@ void TaskManager::readTasks()
             currentFile.open(currentFileName);
             if(currentFile.is_open())
             {
+                std::cout << "successfully opened " << currentFileName << std::endl;
                 currentFolder = new Folder;
                 Folders.push_back(currentFolder);
                 while (std::getline(currentFile, currentStr))
@@ -191,7 +231,7 @@ void TaskManager::saveTasks()
         out.close();
     }
 }
-Task* TaskManager::getTaskByName(std::string taskname)
+Task* TaskManager::getTaskByName(const std::string& taskname) const
 {
     for(Folder* folder : Folders)
     {
@@ -202,7 +242,7 @@ Task* TaskManager::getTaskByName(std::string taskname)
     }
     throw std::invalid_argument("task \""+taskname+"\" not found");
 }
-Folder* TaskManager::getFolderByName(std::string foldername)
+Folder* TaskManager::getFolderByName(const std::string& foldername) const
 {
     for(Folder* folder : Folders)
     {
@@ -210,7 +250,18 @@ Folder* TaskManager::getFolderByName(std::string foldername)
     }
     throw std::invalid_argument("task \""+foldername+"\" not found");
 }
-std::vector<Task*> TaskManager::getAllTasks()
+Folder* TaskManager::getFolderByTask(Task*& targetTask) const
+{
+    for(Folder* folder : Folders)
+    {
+        for(Task* task : folder->getTasks())
+        {
+            if(task->getID() == targetTask->getID()) return folder;
+        }
+    }
+    throw std::invalid_argument("task not found");
+}
+std::vector<Task*> TaskManager::getAllTasks() const
 {
     std::vector<Task*> ret;
     for(Folder* folder : Folders)
@@ -222,7 +273,7 @@ std::vector<Task*> TaskManager::getAllTasks()
     }
     return ret;
 }
-std::vector<Task*> TaskManager::getTasksByDate(int day, int month, int year)
+std::vector<Task*> TaskManager::getTasksByDate(const int& day, const int& month, const int& year) const
 {
     std::vector<Task*> ret;
     for(Folder* folder : Folders)
@@ -234,7 +285,7 @@ std::vector<Task*> TaskManager::getTasksByDate(int day, int month, int year)
     }
     return ret;
 }
-std::vector<Task*> TaskManager::getTasksFromFolder(std::string folderName)
+std::vector<Task*> TaskManager::getTasksFromFolder(const std::string& folderName) const
 {
     for(Folder* folder : Folders)
     {
@@ -242,7 +293,12 @@ std::vector<Task*> TaskManager::getTasksFromFolder(std::string folderName)
     }
     throw std::invalid_argument("folder \""+folderName+"\" not found");
 }
-void TaskManager::printDelimeter(int nameLength, int mode)
+std::vector<Task*> TaskManager::getTasksFromFolder(Folder* targetFolder) const
+{
+    return targetFolder->getTasks();
+    throw std::invalid_argument("folder not found");
+}
+void TaskManager::printDelimeter(const int& nameLength, const int& mode) const
 {
     std::array<std::string, 3> s;
     switch(mode)
@@ -262,7 +318,7 @@ void TaskManager::printDelimeter(int nameLength, int mode)
     for(int i=0; i<20; ++i) std::cout << "━";
     std::cout << s[2] << std::endl;
 }
-void TaskManager::printAllTasks()
+void TaskManager::printAllTasks() const
 {
     // statusLength = 6 ("Status"), any dateLength = 18 ("September DD, YYYY")
     int nameLength=4;
@@ -316,7 +372,7 @@ void TaskManager::printAllTasks()
     }
     printDelimeter(nameLength, 2);
 }
-void TaskManager::printTasks(std::vector<Task*> tasks)
+void TaskManager::printTasks(const std::vector<Task*>& tasks) const
 {
     int nameLength = 4;
     for(Task* task : tasks)
@@ -354,7 +410,7 @@ void TaskManager::printTasks(std::vector<Task*> tasks)
     }
     printDelimeter(nameLength, 2);
 }
-void TaskManager::printLogo()
+void TaskManager::printLogo() const
 {
     std::cout << ctdinfo.logo << "\n";
 }

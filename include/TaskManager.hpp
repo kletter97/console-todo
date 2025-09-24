@@ -10,21 +10,23 @@ class TaskManager
     private:
         std::vector<Folder*> Folders;
         CTDInfo ctdinfo;
-        void printDelimeter(int nameLength, int mode);
+        void printDelimeter(const int& nameLength, const int& mode) const;
     public:
         TaskManager();
-        TaskManager(bool mode);
-        void parseInput(std::string input);
+        TaskManager(const bool mode);
+        void parseInput(const std::string& input);
         void readTasks();
         void saveTasks();
-        Task* getTaskByName(std::string taskname);
-        Folder* getFolderByName(std::string foldername);
-        std::vector<Task*> getAllTasks();
-        std::vector<Task*> getTasksByDate(int day, int month, int year);
-        std::vector<Task*> getTasksFromFolder(std::string folderName);
-        void printAllTasks();
-        void printTasks(std::vector<Task*> tasks);
-        void printLogo();
+        Task* getTaskByName(const std::string& taskname) const;
+        Folder* getFolderByName(const std::string& foldername) const;
+        Folder* getFolderByTask(Task*& targetTask) const;
+        std::vector<Task*> getAllTasks() const;
+        std::vector<Task*> getTasksByDate(const int& day, const int& month, const int& year) const;
+        std::vector<Task*> getTasksFromFolder(const std::string& folderName) const;
+        std::vector<Task*> getTasksFromFolder(Folder* targetFolder) const;
+        void printAllTasks() const;
+        void printTasks(const std::vector<Task*>& tasks) const;
+        void printLogo() const;
 };
 
 #endif

@@ -1,8 +1,11 @@
 #include "Task.hpp"
 #include <iostream>
 
+int Task::idCounter = 0;
+
 Task::Task()
 {
+    id = idCounter++;
     name = "testTask";
     setStatus(false);
     //setStartDate(Date());
@@ -10,6 +13,7 @@ Task::Task()
 }
 Task::Task(const std::string inName, const Date& inEndDate)
 {
+    id = idCounter++;
     setName(inName);
     setStartDate(Date());
     setEndDate(inEndDate);
@@ -18,6 +22,10 @@ Task::Task(const std::string inName, const Date& inEndDate)
 std::string Task::getName() const
 {
     return name;
+}
+int Task::getID() const
+{
+    return id;
 }
 Date* Task::getStartDate()
 {

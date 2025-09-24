@@ -80,6 +80,15 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 \ttask <folder_name> <task_name> <DD MM YYYY>: creates a new task in selected folder with given name and planned date;\n\
                 \tfolder <folder_name>: creates a new folder with given name.\n";
             }
+            else if(command=="delete")
+            {
+                return "Description: \"delete\" allows you to delete tasks and folders, which are no longer needed.\n\
+                Syntax: delete <arguments>\n\
+                Arguments:\n\
+                \ttask <task_name>: deletes a task with given name;\n\
+                \tdone <folder_name/\'all\'>: deletes all done tasks in specified folder/all folders, if given \'all\';\n\
+                \tfolder <folder_name>: deletes a folder with given name.\n";
+            }
             else return "Command is not found or there\'s no description for this command.";
         }
         ~CTDInfo()

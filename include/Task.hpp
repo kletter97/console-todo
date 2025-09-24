@@ -7,6 +7,8 @@
 class Task
 {
     private:
+        static int idCounter;
+        int id;
         std::string name;
         Date startDate, endDate;
         bool isCompleted;
@@ -14,6 +16,7 @@ class Task
         Task();
         Task(const std::string inName, const Date& inEndDate);
         std::string getName() const;
+        int getID() const;
         Date* getStartDate();
         Date* getEndDate();
         bool getStatus() const;

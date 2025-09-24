@@ -18,7 +18,7 @@ class Folder
         std::vector<Task*> getTasks() const;
         void setName(const std::string newName);
         void addTask(Task* newTask);
-        void removeTask(const std::string taskName);
+        void removeTask(Task* targetTask);
         Task* getTask(const std::string taskName) const;
         void transferTask(const Task& task);
         void receiveTask(const Task& task);

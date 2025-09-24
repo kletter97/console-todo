@@ -24,9 +24,10 @@ void Folder::addTask(Task* newTask)
 {
     Tasks.push_back(newTask);
 }
-void Folder::removeTask(const std::string taskName)
+void Folder::removeTask(Task* targetTask)
 {
-    ; //
+    Tasks.erase(std::find(Tasks.begin(), Tasks.end(), targetTask));
+    delete targetTask;
 }
 Task* Folder::getTask(const std::string taskName) const
 {
