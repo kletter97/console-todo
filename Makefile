@@ -6,7 +6,7 @@ CXXFLAGS = -std=c++20 -Wall -Iinclude
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
-DEP_DIR = dep
+DEP_DIR = obj
 
 # Исходники и объектные файлы
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
