@@ -69,7 +69,9 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 \t- help;\n\
                 \t- about;\n\
                 \t- exit;\n\
-                \t- new.\n\
+                \t- new;\n\
+                \t- delete;\n\
+                \t- move.\n\
                 type \"help <command_name> to get more information about specific command";
             }
             else if(command=="new")
@@ -88,6 +90,12 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 \ttask <task_name>: deletes a task with given name;\n\
                 \tdone <folder_name/\'all\'>: deletes all done tasks in specified folder/all folders, if given \'all\';\n\
                 \tfolder <folder_name>: deletes a folder with given name.\n";
+            }
+            else if(command=="move")
+            {
+                return "Description: \"delete\" moves given task to given folder.\n\
+                Syntax: move <task_name> <target_folder_name>\n\
+                Arguments: there\'s no arguments for this command\n";
             }
             else return "Command is not found or there\'s no description for this command.";
         }

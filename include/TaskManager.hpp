@@ -24,6 +24,7 @@ class TaskManager
         std::vector<Task*> getTasksByDate(const int& day, const int& month, const int& year) const;
         std::vector<Task*> getTasksFromFolder(const std::string& folderName) const;
         std::vector<Task*> getTasksFromFolder(Folder* targetFolder) const;
+        void moveTaskToFolder(Task* targetTask, Folder* newFolder);
         void printAllTasks() const;
         void printTasks(const std::vector<Task*>& tasks) const;
         void printLogo() const;

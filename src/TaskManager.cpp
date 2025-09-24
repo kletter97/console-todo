@@ -90,9 +90,10 @@ void TaskManager::parseInput(const std::string& input)
     {
         if(words[1]=="task")
         {
-            Task* newTask = getTaskByName(words[2]);
-            Folder* targetFolder = getFolderByTask(newTask);
-            targetFolder->removeTask(newTask);
+            Task* targetTask = getTaskByName(words[2]);
+            Folder* targetFolder = getFolderByTask(targetTask);
+            targetFolder->removeTask(targetTask);
+            delete targetTask;
         }
         else if(words[1]=="folder")
         {
@@ -124,6 +125,12 @@ void TaskManager::parseInput(const std::string& input)
             }
         }
         else throw std::invalid_argument("unknown \"delete\" argument: "+words[1]);
+    }
+    else if(words[0]=="move")
+    {
+        Task* targetTask = getTaskByName(words[1]);
+        Folder* targetFolder = getFolderByName(words[2]);
+        moveTaskToFolder(targetTask, targetFolder);
     }
     else if(words[0]=="done")
     {
@@ -299,6 +306,12 @@ std::vector<Task*> TaskManager::getTasksFromFolder(Folder* targetFolder) const
 {
     return targetFolder->getTasks();
     throw std::invalid_argument("folder not found");
+}
+void TaskManager::moveTaskToFolder(Task* targetTask, Folder* newFolder)
+{
+    Folder* oldFolder = getFolderByTask(targetTask);
+    newFolder->addTask(targetTask);
+    oldFolder->removeTask(targetTask);
 }
 void TaskManager::printDelimeter(const int& nameLength, const int& mode) const
 {
