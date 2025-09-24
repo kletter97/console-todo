@@ -11,10 +11,6 @@ class TaskManager
         std::vector<Folder*> Folders;
         CTDInfo ctdinfo;
         void printDelimeter(const int& nameLength, const int& mode) const;
-    public:
-        TaskManager();
-        TaskManager(const bool mode);
-        void parseInput(const std::string& input);
         void readTasks();
         void saveTasks();
         Task* getTaskByName(const std::string& taskname) const;
@@ -25,6 +21,10 @@ class TaskManager
         std::vector<Task*> getTasksFromFolder(const std::string& folderName) const;
         std::vector<Task*> getTasksFromFolder(Folder* targetFolder) const;
         void moveTaskToFolder(Task* targetTask, Folder* newFolder);
+    public:
+        TaskManager();
+        TaskManager(const bool mode);
+        void parseInput(const std::string& input);
         void printAllTasks() const;
         void printTasks(const std::vector<Task*>& tasks) const;
         void printLogo() const;

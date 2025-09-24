@@ -62,7 +62,7 @@ void TaskManager::parseInput(const std::string& input)
             if(words[3][0]=='+' || words[3][0]=='-') targetTask->getEndDate()->move(stoi(words[3]));
             else
             {
-                Date newDate((unsigned)stoi(words[3]), (unsigned)stoi(words[4]), stoi(words[5]));
+                Date newDate((unsigned)stoi(words[3]), (unsigned)stoi(words[4])-1, stoi(words[5]));
                 targetTask->setEndDate(newDate);
             }
         }
@@ -75,7 +75,7 @@ void TaskManager::parseInput(const std::string& input)
             Folder* targetFolder = getFolderByName(words[2]);
             Task* newTask = new Task;
             newTask->setName(words[3]);
-            Date* newDate = new Date((unsigned)stoi(words[4]), (unsigned)stoi(words[5]), stoi(words[6]));
+            Date* newDate = new Date((unsigned)stoi(words[4]), (unsigned)stoi(words[5])-1, stoi(words[6]));
             newTask->setEndDate(*newDate);
             targetFolder->addTask(newTask);
         }
@@ -407,6 +407,8 @@ void TaskManager::printTasks(const std::vector<Task*>& tasks) const
     for(Task* task : tasks)
     {
         printDelimeter(nameLength, 1);
+        // if task is done, it'll be printed gray, if undone - standart (white)
+        if(task->getStatus()) std::cout << "\033[90m";
         // name output
         std::cout << "┃ " << task->getName();
         for(int i=0; i<nameLength-task->getName().length()+1; ++i) std::cout << " ";
@@ -421,7 +423,7 @@ void TaskManager::printTasks(const std::vector<Task*>& tasks) const
         std::cout << "┃ " << task->getStartDate()->print();
         for(int i=0; i<19-(task->getStartDate()->print().length()); ++i) std::cout << " ";
         // final "┃" output
-        std::cout << "┃ " << std::endl;
+        std::cout << "┃ \033[0m" << std::endl;
     }
     printDelimeter(nameLength, 2);
 }
