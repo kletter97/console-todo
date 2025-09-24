@@ -24,6 +24,7 @@ class Task
         void setStartDate(const Date& newDate);
         void setEndDate(const Date& newDate);
         void setStatus(const bool newStatus);
+        ~Task();
 };
 
 #endif //TASK_H

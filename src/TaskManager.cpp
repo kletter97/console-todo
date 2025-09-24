@@ -195,6 +195,7 @@ void TaskManager::readTasks()
                         }
                     }
                 }
+            currentFile.close();
             }
         }
     list.close();
@@ -207,7 +208,8 @@ void TaskManager::saveTasks()
         if (!fs::exists("tasks")) if (fs::create_directories("tasks")) std::cout << "NOTE: Created \"tasks/\" for saving tasks." << std::endl;
         out.open("tasks/"+folder->getName()+".ctdf");
         list << "tasks/"+folder->getName()+".ctdf\n";
-        out << "folder=" << folder->getName() << "\nnext\n";
+        out << "folder=" << folder->getName();
+        if(folder->getTasks().size()!=0) out << "\nnext\n";
         for(Task* task : folder->getTasks())
         {
             out << "name=" << task->getName() << "\n";

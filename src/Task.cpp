@@ -8,8 +8,6 @@ Task::Task()
     id = idCounter++;
     name = "testTask";
     setStatus(false);
-    //setStartDate(Date());
-    //setEndDate(Date());
 }
 Task::Task(const std::string inName, const Date& inEndDate)
 {
@@ -55,3 +53,4 @@ void Task::setStatus(const bool newStatus)
 {
     isCompleted = newStatus;
 }
+Task::~Task() {}
