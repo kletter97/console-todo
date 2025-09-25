@@ -5,18 +5,14 @@
 int main()
 {
     
-    std::string command ;
     Date date((unsigned)29, (unsigned)2, 2027), curDate;
     Task task("Example Task", date);
-    TaskManager testTM;
-    testTM.printLogo();
-    testTM.printAllTasks();
+    TaskManager TM;
+    std::cout << "\033[?1049h";
     while(true)
     {
-        std::cout << "console-todo> ";
-        getline(std::cin, command);
-        try {testTM.parseInput(command);}
-        catch (const std::invalid_argument& e) {std::cout << "ERROR: " << e.what() << "\n";}
+        TM.printInterface();
     }
+    std::cout << "\033[?1049l";
     return 0;
 }

@@ -8,11 +8,13 @@ namespace fs = std::filesystem;
 
 TaskManager::TaskManager()
 {
+    displayMode = true; //true for all tasks printing on start
+    currentError = "";
     try {readTasks();}
     catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
     if(Folders.size()==0)
     {
-        std::cout << "NOTE: No tasks found, created an empty folder \"General\".\n";
+        currentError = "\033[33mNOTE: No tasks found, created an empty folder \"General\".\n\033[0m";
         Folder* General = new Folder("General");
         Folders.push_back(General);
     }
@@ -20,6 +22,8 @@ TaskManager::TaskManager()
 TaskManager::TaskManager(bool mode)
 {
     // just for testing the class without import/export tasks (those methods are not created so far)
+    displayMode = true; //true for all tasks printing on start
+    currentError = "";
     Task* testTask = new Task;
     Folder* testFolder1 = new Folder;
     Folder* testFolder2 = new Folder;
@@ -43,13 +47,12 @@ void TaskManager::parseInput(const std::string& input)
     words.push_back(input.substr(oldi+1));
     if(words[0]=="display")
     {
-        std::vector<Task*> tasksForDisplay;
-        if(words[1]=="all") printAllTasks();
+        if(words[1]=="all") displayMode=true;
         else if(words[1]=="date" || words[1]=="folder")
         {
+            displayMode = false;
             if(words[1]=="date") tasksForDisplay = getTasksByDate(stoi(words[2]), stoi(words[3])-1, stoi(words[4]));
             else if(words[1]=="folder") tasksForDisplay = getTasksFromFolder(words[2]);
-            printTasks(tasksForDisplay);
         }
         else throw std::invalid_argument("unknown \"display\" argument: "+words[1]);
     }
@@ -148,6 +151,7 @@ void TaskManager::parseInput(const std::string& input)
     {
         std::cout << "saving your tasks..." << "\n";
         saveTasks();
+        std::cout << "\033[?1049l";
         std::exit(0);
     }
     else throw std::invalid_argument("unknown command: "+words[0]);
@@ -430,4 +434,20 @@ void TaskManager::printTasks(const std::vector<Task*>& tasks) const
 void TaskManager::printLogo() const
 {
     std::cout << ctdinfo.logo << "\n";
+}
+void TaskManager::clearScreen() const
+{
+    std::cout << "\033[2J\033[H";
+}
+void TaskManager::printInterface()
+{
+    std::string command;
+    clearScreen();
+    printLogo();
+    if(displayMode) printAllTasks();
+    else printTasks(tasksForDisplay);
+    std::cout << currentError << "console-todo> ";
+    getline(std::cin, command);
+    try {parseInput(command); currentError = "";}
+    catch (const std::invalid_argument& e) {currentError = "\033[31mERROR: " + (std::string)e.what() + "\n\033[0m";}
 }
