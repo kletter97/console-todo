@@ -7,15 +7,15 @@ class CTDInfo
 {
     public:
         static constexpr const char* name = "ConsoleToDo";
-        static constexpr const char* version = "inDev";
-        static constexpr const char* publicationDate = "24.9.2025";
-        static constexpr const char* description = "";
+        static constexpr const char* version = "0.1";
+        static constexpr const char* publicationDate = "25.9.2025";
+        static constexpr const char* description = "ConsoleToDo is a terminal program for tracking tasks. You can create, view, edit, sort by scheduled date and folders and mark as done/undone your tasks.\nType 'help all' to get more information.";
         static constexpr const char* logo = \
-R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ inDev
+R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ 
 ┃ ╻ ┣━━━┳━━━┳━━━┳━━━┫ ┣━┻━┓ ┏━┻━┫ ╻ ┣━━━┓
 ┃ ┣━┫ ╻ ┃ ╻ ┃ ╺━┫ ╻ ┃ ┃ ╺ ┃ ┃ ╻ ┃ ┃ ┃ ╻ ┃
 ┃ ╹ ┃ ╹ ┃ ┃ ┣━╸ ┃ ╹ ┃ ┃ ╺━┫ ┃ ╹ ┃ ╹ ┃ ╹ ┃
-┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛)";
+┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛ v0.1)";
         CTDInfo() {}
         static const std::string getInfoText()
         {
