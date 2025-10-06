@@ -146,8 +146,8 @@ void TaskManager::parseInput(const std::string& input)
         Task* targetTask = getTaskByName(words[1]);
         targetTask->setStatus(false);
     }
-    else if(words[0]=="about") currentNote = "\033[12m" + ctdinfo.getInfoText() + "\n\033[0m";
-    else if(words[0]=="help") currentNote = "\033[12m" + (std::string)ctdinfo.getHelp(words[1]) + "\n\033[0m";
+    else if(words[0]=="about") currentNote = "\033[94m" + ctdinfo.getInfoText() + "\n\033[0m";
+    else if(words[0]=="help") currentNote = "\033[94m" + (std::string)ctdinfo.getHelp(words[1]) + "\n\033[0m";
     else if(words[0]=="exit")
     {
         std::cout << "saving your tasks..." << "\n";
