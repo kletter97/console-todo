@@ -10,12 +10,12 @@ namespace fs = std::filesystem;
 TaskManager::TaskManager()
 {
     displayMode = true; //true for all tasks printing on start
-    currentError = "";
+    currentNote = "";
     try {readTasks();}
     catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
     if(Folders.size()==0)
     {
-        currentError = "\033[33mNOTE: No tasks found, created an empty folder \"General\".\n\033[0m";
+        currentNote = "\033[33mNOTE: No tasks found, created an empty folder \"General\".\n\033[0m";
         Folder* General = new Folder("General");
         Folders.push_back(General);
     }
@@ -24,7 +24,7 @@ TaskManager::TaskManager(bool mode)
 {
     // just for testing the class without import/export tasks (those methods are not created so far)
     displayMode = true; //true for all tasks printing on start
-    currentError = "";
+    currentNote = "";
     Task* testTask = new Task;
     Folder* testFolder1 = new Folder;
     Folder* testFolder2 = new Folder;
@@ -146,8 +146,8 @@ void TaskManager::parseInput(const std::string& input)
         Task* targetTask = getTaskByName(words[1]);
         targetTask->setStatus(false);
     }
-    else if(words[0]=="about") std::cout << ctdinfo.getInfoText() << "\n";
-    else if(words[0]=="help") std::cout << ctdinfo.getHelp(words[1]) << "\n";
+    else if(words[0]=="about") currentNote = "\033[12m" + ctdinfo.getInfoText() + "\n\033[0m";
+    else if(words[0]=="help") currentNote = "\033[12m" + (std::string)ctdinfo.getHelp(words[1]) + "\n\033[0m";
     else if(words[0]=="exit")
     {
         std::cout << "saving your tasks..." << "\n";
@@ -482,8 +482,8 @@ void TaskManager::printInterface()
     printLogo();
     if(displayMode) printAllTasks();
     else printTasks(tasksForDisplay);
-    std::cout << currentError << "console-todo> ";
+    std::cout << currentNote << "console-todo> ";
     getline(std::cin, command);
-    try {parseInput(command); currentError = "";}
-    catch (const std::invalid_argument& e) {currentError = "\033[31mERROR: " + (std::string)e.what() + "\n\033[0m";}
+    try {currentNote = ""; parseInput(command);}
+    catch (const std::invalid_argument& e) {currentNote = "\033[31mERROR: " + (std::string)e.what() + "\n\033[0m";}
 }

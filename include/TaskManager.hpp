@@ -15,7 +15,7 @@ class TaskManager
                                     //true: all tasks arranged by folders (printAllTasks())
                                     //false: list of tasks related to folder or date (printTasks())
         std::vector<Task*> tasksForDisplay; //<vector of tasks to display (set by command 'display <args>')
-        std::string currentError;  //<for displaying errors for incorrect input
+        std::string currentNote;  //<for displaying errors/notes
         /**
          * @brief prints delimeter line for output table
          * @param nameLength - length of the longest task name, used to calculate table width
