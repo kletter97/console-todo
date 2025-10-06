@@ -15,7 +15,7 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
 ┃ ╻ ┣━━━┳━━━┳━━━┳━━━┫ ┣━┻━┓ ┏━┻━┫ ╻ ┣━━━┓
 ┃ ┣━┫ ╻ ┃ ╻ ┃ ╺━┫ ╻ ┃ ┃ ╺ ┃ ┃ ╻ ┃ ┃ ┃ ╻ ┃
 ┃ ╹ ┃ ╹ ┃ ┃ ┣━╸ ┃ ╹ ┃ ┃ ╺━┫ ┃ ╹ ┃ ╹ ┃ ╹ ┃
-┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛ v0.1)";
+┗━━━┻━━━┻━┻━┻━━━┻━━━┻━┻━━━┻━┻━━━┻━━━┻━━━┛ v0.2a)";
         CTDInfo() {}
         static const std::string getInfoText()
         {
@@ -93,7 +93,7 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
             }
             else if(command=="move")
             {
-                return "Description: \"delete\" moves given task to given folder.\n\
+                return "Description: \"move\" moves given task to given folder.\n\
                 Syntax: move <task_name> <target_folder_name>\n\
                 Arguments: there\'s no arguments for this command\n";
             }

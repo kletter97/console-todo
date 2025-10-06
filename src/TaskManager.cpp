@@ -1,4 +1,5 @@
 #include "TaskManager.hpp"
+#include <sys/ioctl.h>
 #include <iostream>
 #include <fstream>
 #include <array>
@@ -348,7 +349,15 @@ void TaskManager::printAllTasks() const
             if(task->getName().length() > nameLength) nameLength = task->getName().length();
         }
     }
+    std::array<int, 2> indents = getIndents(nameLength+54);
+    // indent to center the table
+    for(int i=0; i<indents[0]; i++) std::cout << ' ';
+
     printDelimeter(nameLength, 0);
+
+    // indent to center the table
+    for(int i=0; i<indents[0]; i++) std::cout << ' ';
+
     //Upper bar output, format: | Name | Status | Due | Created |
     std::cout << "┃ Name ";
     for(int i=0; i<nameLength-4; ++i) std::cout << " ";
@@ -360,7 +369,13 @@ void TaskManager::printAllTasks() const
 
     for(Folder* folder : Folders)
     {
+        // indent to center the table
+        for(int i=0; i<indents[0]; i++) std::cout << ' ';
+
         printDelimeter(nameLength, 1);
+
+        // indent to center the table
+        for(int i=0; i<indents[0]; i++) std::cout << ' ';
 
         //Folder header output
         std::cout << "\033[30;47m " << folder->getName();
@@ -369,7 +384,14 @@ void TaskManager::printAllTasks() const
 
         for(Task* task : folder->getTasks())
         {
+            // indent to center the table
+            for(int i=0; i<indents[0]; i++) std::cout << ' ';
+
             printDelimeter(nameLength, 1);
+
+            // indent to center the table
+            for(int i=0; i<indents[0]; i++) std::cout << ' ';
+            
             // if task is done, it'll be printed gray, if undone - standart (white)
             if(task->getStatus()) std::cout << "\033[90m";
             // name output
@@ -389,6 +411,9 @@ void TaskManager::printAllTasks() const
             std::cout << "┃ \033[0m" << std::endl;
         }
     }
+    // indent to center the table
+    for(int i=0; i<indents[0]; i++) std::cout << ' ';
+
     printDelimeter(nameLength, 2);
 }
 void TaskManager::printTasks(const std::vector<Task*>& tasks) const
@@ -438,6 +463,17 @@ void TaskManager::printLogo() const
 void TaskManager::clearScreen() const
 {
     std::cout << "\033[2J\033[H";
+}
+std::array<int, 2> TaskManager::getTerminalSize() const
+{
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+    return {w.ws_row, w.ws_col};
+}
+std::array<int, 2> TaskManager::getIndents(int xLen, int yLen) const
+{
+    std::array<int, 2> terSize = getTerminalSize();
+    return {(terSize[1]-xLen)/2, (terSize[0]-yLen)/2};
 }
 void TaskManager::printInterface()
 {

@@ -4,6 +4,7 @@
 #include "Folder.hpp"
 #include "CTDInfo.hpp"
 #include <vector>
+#include <array>
 
 class TaskManager
 {
@@ -129,6 +130,8 @@ class TaskManager
         //Utility functions for interface
         void printLogo() const;
         void clearScreen() const;
+        std::array<int, 2> getTerminalSize() const;
+        std::array<int, 2> getIndents(int xLen, int yLen = 0) const;
     public:
         /**
          * @brief default constructor, initializes TaskManager in interactive mode and reads tasks from files
