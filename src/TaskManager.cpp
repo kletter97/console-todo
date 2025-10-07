@@ -211,6 +211,14 @@ void TaskManager::readTasks()
             }
         }
     list.close();
+
+    // create folder with all tasks
+    Folder* allTasks = new Folder("All-tasks");
+    for(Folder* folder : Folders) for (Task* task : folder->getTasks())
+    {
+        allTasks->addTask(task);
+    }
+    Folders.push_back(allTasks);
 }
 void TaskManager::saveTasks()
 {
@@ -418,12 +426,25 @@ void TaskManager::printAllTasks() const
 }
 void TaskManager::printTasks(const std::vector<Task*>& tasks) const
 {
+    //this block is for sidebar with 
+    unsigned indent;
+    std::vector<std::string> sideBar = formFolderSideBar(indent);
+    unsigned k = 0, sideBarHeight = sideBar.size();
+
     int nameLength = 4;
     for(Task* task : tasks)
     {
         if(task->getName().length() > nameLength) nameLength = task->getName().length();
     }
+
+    // indent
+    for(int i=0; i<indent; i++) std::cout << " ";
+
     printDelimeter(nameLength, 0);
+
+    // indent
+    for(int i=0; i<indent; i++) std::cout << " ";
+
     //Upper bar output, format: | Name | Status | Due | Created |
     std::cout << "┃ Name ";
     for(int i=0; i<nameLength-4; ++i) std::cout << " ";
@@ -435,7 +456,19 @@ void TaskManager::printTasks(const std::vector<Task*>& tasks) const
 
     for(Task* task : tasks)
     {
+        if(k<sideBarHeight)
+        {
+            std::cout << sideBar[k];
+            k++;
+        }
+        else for(int i=0; i<indent; i++) std::cout << " "; // indent
         printDelimeter(nameLength, 1);
+        if(k<sideBarHeight)
+        {
+            std::cout << sideBar[k];
+            k++;
+        }
+        else for(int i=0; i<indent; i++) std::cout << " "; // indent
         // if task is done, it'll be printed gray, if undone - standart (white)
         if(task->getStatus()) std::cout << "\033[90m";
         // name output
@@ -454,6 +487,8 @@ void TaskManager::printTasks(const std::vector<Task*>& tasks) const
         // final "┃" output
         std::cout << "┃ \033[0m" << std::endl;
     }
+    // indent
+    for(int i=0; i<indent; i++) std::cout << " ";
     printDelimeter(nameLength, 2);
 }
 void TaskManager::printLogo() const
@@ -473,7 +508,27 @@ std::array<int, 2> TaskManager::getTerminalSize() const
 std::array<int, 2> TaskManager::getIndents(int xLen, int yLen) const
 {
     std::array<int, 2> terSize = getTerminalSize();
-    return {(terSize[1]-xLen)/2, (terSize[0]-yLen)/2};
+    return {0, 0};
+    //return {(terSize[1]-xLen)/2, (terSize[0]-yLen)/2};
+}
+std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength/*, Folder& openedFodler*/) const // indentLength is an empty variable to get indent for main table
+{
+    std::vector<std::string> ret;
+    std::string currentStr;
+    unsigned length = 0;
+    for(Folder* folder : Folders) if(folder->getName().length() > length) {length = folder->getName().length(); indentLength = length+1;}
+    for(Folder* folder : Folders)
+    {
+        currentStr = "┏";
+        for(int i=0; i<length; i++) currentStr += "━";
+        ret.push_back(currentStr);
+        currentStr = "┃" + folder->getName();
+        for(int i=0; i<length-(folder->getName().length()); i++) currentStr += " ";
+        ret.push_back(currentStr);
+    }
+    currentStr = "┗";
+    for(int i=0; i<length; i++) currentStr += "━";
+    return ret;
 }
 void TaskManager::printInterface()
 {

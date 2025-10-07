@@ -132,6 +132,7 @@ class TaskManager
         void clearScreen() const;
         std::array<int, 2> getTerminalSize() const;
         std::array<int, 2> getIndents(int xLen, int yLen = 0) const;
+        std::vector<std::string> formFolderSideBar(unsigned& indentLength/*, Folder& openedFodler*/) const;
     public:
         /**
          * @brief default constructor, initializes TaskManager in interactive mode and reads tasks from files
