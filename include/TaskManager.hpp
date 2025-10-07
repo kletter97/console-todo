@@ -118,11 +118,6 @@ class TaskManager
         void moveTaskToFolder(Task* targetTask, Folder* newFolder);
 
         /**
-         * @brief prints a table of all tasks arranged by folders (called by 'display all' command)
-         */
-        void printAllTasks() const;
-
-        /**
          * @brief prints a table of specified tasks (called by 'display date <...>' and 'display folder <...>' commands)
          * @param tasks - vector of pointers to tasks to be printed (formed by getTasksByDate() or getTasksFromFolder() methods)
          */
