@@ -4,6 +4,8 @@
 #include <fstream>
 #include <array>
 #include <filesystem>
+#include <algorithm>
+#include "getch.hpp"
 
 namespace fs = std::filesystem;
 
@@ -449,41 +451,58 @@ void TaskManager::printTasks(const Folder* outputFolder) const
     for(int i=0; i<11; ++i) std::cout << " ";
     std::cout << "┃" << std::endl;
 
-    for(Task* task : tasks)
+    for(int i=0; i<std::max<int>(tasks.size(), (int)((float)(sideBarHeight/3)*1.5-0.5)); i++)
     {
         if(k<sideBarHeight)
         {
             std::cout << sideBar[k];
             k++;
         }
-        else for(int i=0; i<indent; i++) std::cout << " "; // indent
+        else if(i<tasks.size()) for(int j=0; j<indent; j++) std::cout << " "; // indent
         printDelimeter(nameLength, 1);
         if(k<sideBarHeight)
         {
             std::cout << sideBar[k];
             k++;
         }
-        else for(int i=0; i<indent; i++) std::cout << " "; // indent
-        // if task is done, it'll be printed gray, if undone - standart (white)
-        if(task->getStatus()) std::cout << "\033[90m";
-        // name output
-        std::cout << "┃ " << task->getName();
-        for(int i=0; i<nameLength-task->getName().length()+1; ++i) std::cout << " ";
-        // status output
-        std::cout << "┃ ";
-        if(task->getStatus()) std::cout << "Done   ";
-        else std::cout << "Undone ";
-        // deadline (endDate) output
-        std::cout << "┃ " << task->getEndDate()->print();
-        for(int i=0; i<19-(task->getEndDate()->print().length()); ++i) std::cout << " ";
-        // creation date (startDate) output
-        std::cout << "┃ " << task->getStartDate()->print();
-        for(int i=0; i<19-(task->getStartDate()->print().length()); ++i) std::cout << " ";
-        // final "┃" output
-        std::cout << "┃ \033[0m" << std::endl;
+        else for(int j=0; j<indent; j++) std::cout << " "; // indent
+        if(i<tasks.size())
+        {
+            // if task is done, it'll be printed gray, if undone - standart (white)
+            if(tasks[i]->getStatus()) std::cout << "\033[90m";
+            // name output
+            std::cout << "┃ " << tasks[i]->getName();
+            for(int j=0; j<nameLength-tasks[i]->getName().length()+1; j++) std::cout << " ";
+            // status output
+            std::cout << "┃ ";
+            if(tasks[i]->getStatus()) std::cout << "Done   ";
+            else std::cout << "Undone ";
+            // deadline (endDate) output
+            std::cout << "┃ " << tasks[i]->getEndDate()->print();
+            for(int j=0; j<19-(tasks[i]->getEndDate()->print().length()); j++) std::cout << " ";
+            // creation date (startDate) output
+            std::cout << "┃ " << tasks[i]->getStartDate()->print();
+            for(int j=0; j<19-(tasks[i]->getStartDate()->print().length()); j++) std::cout << " ";
+            // final "┃" output
+            std::cout << "┃ \033[0m" << std::endl;
+        }
+        else // empty table line if the sidebar is higher than main table
+        {
+            std::cout << "┃";
+            for(int i=0; i<nameLength+2; ++i) std::cout << " ";
+            std::cout << "┃        ┃";
+            for(int i=0; i<20; ++i) std::cout << " ";
+            std::cout << "┃";
+            for(int i=0; i<20; ++i) std::cout << " ";
+            std::cout << "┃" << std::endl;
+        }
     }
-    // indent
-    for(int i=0; i<indent; i++) std::cout << " ";
+    if(k<sideBarHeight)
+    {
+        std::cout << sideBar[k];
+        k++;
+    }
+    else for(int j=0; j<indent; j++) std::cout << " "; // indent
     printDelimeter(nameLength, 2);
 }
 void TaskManager::printLogo() const
@@ -515,7 +534,7 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     indentLength = length+1;
 
     // "All tasks" tab
-    if(openedFolder->getName()!="all-tasks") color = "\033[90m"; //grey if not selected
+    if(!displayMode) color = "\033[90m"; //grey if not selected
     else color = "";
     // upper border
     currentStr = color + "┏";
@@ -559,12 +578,26 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
 Folder TaskManager::allTasksFolder() const
 {
     // create folder with all tasks
-    Folder allTasks("all-tasks");
+    Folder allTasks("serviceAllTasksFolder");
     for(Folder* folder : Folders) for (Task* task : folder->getTasks())
     {
         allTasks.addTask(task);
     }
     return allTasks;
+}
+void TaskManager::nextOrPrevFolder(bool mode)
+{
+    auto it = std::find(Folders.begin(), Folders.end(), folderForDisplay);
+    if(mode) // next folder
+    {
+        if(displayMode) {folderForDisplay = Folders[0]; displayMode = false;}
+        else if(it != Folders.end() && it + 1 != Folders.end()) folderForDisplay = *(it + 1);
+    }
+    else // previous folder
+    {
+        if(folderForDisplay == Folders[0]) displayMode = true;
+        else if(it != Folders.begin()) folderForDisplay = *(it - 1);
+    }
 }
 void TaskManager::printInterface()
 {
@@ -579,7 +612,47 @@ void TaskManager::printInterface()
     }
     else printTasks(folderForDisplay);
     std::cout << currentNote << "console-todo> ";
-    getline(std::cin, command);
-    try {currentNote = ""; parseInput(command);}
-    catch (const std::invalid_argument& e) {currentNote = "\033[31mERROR: " + (std::string)e.what() + "\n\033[0m";}
+
+    // here's a custom input catcher, because program needs to catch arrow keys without clicking "enter", so it reads symbols by getch() (getch.hpp) and analyze them
+    while(true)
+    {    
+        int k = getch(); // getch() reads a single character without waiting for Enter, watch getch.hpp
+        if(k == 27) // if the first character is ESC (checking for arrows)
+        {
+            k = getch();
+            if(k == 91) // and the second character is [
+            {
+                k = getch();
+                switch(k) // the third character specifies the arrow key
+                {
+                    case 65: nextOrPrevFolder(0); break; // Up arrow
+                    case 66: nextOrPrevFolder(1); break; // Down arrow
+                    //case 67: break; // Right arrow (not using it for now)
+                    //case 68: break; // Left arrow (not using it for now)
+                    default: break; // if not an arrow, return the character to input stream
+                }
+            }
+            //else ungetc(k, stdin); // if not [, return the character to input stream
+            return;
+        }
+        else if(k == 127 || k == 8) // backspace
+        {
+            if(!command.empty())
+            {
+                command.pop_back();
+                std::cout << "\b \b" << std::flush; // output backspace so last symbol deleted in terminal
+            }
+        }
+        else if(k == 13 || k == 10) // enter
+        {
+            try {currentNote = ""; parseInput(command);}
+            catch (const std::invalid_argument& e) {currentNote = "\033[31mERROR: " + (std::string)e.what() + "\n\033[0m";}
+            return;
+        }
+        else // regular symbol, add to command and show in terminal
+        {
+            command.push_back((char)k);
+            std::cout << (char)k;
+        }
+    }
 }

@@ -135,6 +135,7 @@ class TaskManager
         std::array<int, 2> getIndents(int xLen, int yLen = 0) const;
         std::vector<std::string> formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const;
         Folder allTasksFolder() const;
+        void nextOrPrevFolder(bool mode);
     public:
         /**
          * @brief default constructor, initializes TaskManager in interactive mode and reads tasks from files
