@@ -8,7 +8,7 @@ class CTDInfo
     public:
         static constexpr const char* name = "ConsoleToDo";
         static constexpr const char* version = "0.2a";
-        static constexpr const char* publicationDate = "7.10.2025";
+        static constexpr const char* publicationDate = "8.10.2025";
         static constexpr const char* description = "ConsoleToDo is a terminal program for tracking tasks. You can create, view, edit, sort by scheduled date and folders and mark as done/undone your tasks.\nType 'help all' to get more information.";
         static constexpr const char* logo = \
 R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ 
@@ -31,8 +31,9 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 Syntax: display <arguments>\n\
                 Arguments:\n\
                 \tall: displays all tasks grouped by folders;\n\
-                \tdate <DD MM YYYY>: displays all tasks planned for selected day;\n\
-                \tfolder <folder_name>: displays all tasks in selected folder.\n";
+                \tfolder <folder_name>: displays all tasks in selected folder.\n\
+                NOTE: It's easier to use arrow-up and arrow-down keys to navigate (added in v0.2).\
+                NOTE: argument \"date\" is removed in v0.2.";
             }
             else if(command=="edit")
             {
