@@ -15,6 +15,7 @@ class TaskManager
                                     //true: all tasks arranged by folders (printAllTasks())
                                     //false: list of tasks related to folder or date (printTasks())
         std::vector<Task*> tasksForDisplay; //<vector of tasks to display (set by command 'display <args>')
+        Folder* folderForDisplay; //< folder to display
         std::string currentNote;  //<for displaying errors/notes
         /**
          * @brief prints delimeter line for output table
@@ -125,14 +126,15 @@ class TaskManager
          * @brief prints a table of specified tasks (called by 'display date <...>' and 'display folder <...>' commands)
          * @param tasks - vector of pointers to tasks to be printed (formed by getTasksByDate() or getTasksFromFolder() methods)
          */
-        void printTasks(const std::vector<Task*>& tasks) const;
+        void printTasks(const Folder* outputFolder) const;
 
         //Utility functions for interface
         void printLogo() const;
         void clearScreen() const;
         std::array<int, 2> getTerminalSize() const;
         std::array<int, 2> getIndents(int xLen, int yLen = 0) const;
-        std::vector<std::string> formFolderSideBar(unsigned& indentLength/*, Folder& openedFodler*/) const;
+        std::vector<std::string> formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const;
+        Folder allTasksFolder() const;
     public:
         /**
          * @brief default constructor, initializes TaskManager in interactive mode and reads tasks from files

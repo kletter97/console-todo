@@ -52,8 +52,9 @@ void TaskManager::parseInput(const std::string& input)
         else if(words[1]=="date" || words[1]=="folder")
         {
             displayMode = false;
-            if(words[1]=="date") tasksForDisplay = getTasksByDate(stoi(words[2]), stoi(words[3])-1, stoi(words[4]));
-            else if(words[1]=="folder") tasksForDisplay = getTasksFromFolder(words[2]);
+            //if(words[1]=="date") tasksForDisplay = getTasksByDate(stoi(words[2]), stoi(words[3])-1, stoi(words[4]));
+            //else
+            if(words[1]=="folder") folderForDisplay = getFolderByName(words[2]);
         }
         else throw std::invalid_argument("unknown \"display\" argument: "+words[1]);
     }
@@ -211,14 +212,6 @@ void TaskManager::readTasks()
             }
         }
     list.close();
-
-    // create folder with all tasks
-    Folder* allTasks = new Folder("All-tasks");
-    for(Folder* folder : Folders) for (Task* task : folder->getTasks())
-    {
-        allTasks->addTask(task);
-    }
-    Folders.push_back(allTasks);
 }
 void TaskManager::saveTasks()
 {
@@ -424,11 +417,13 @@ void TaskManager::printAllTasks() const
 
     printDelimeter(nameLength, 2);
 }
-void TaskManager::printTasks(const std::vector<Task*>& tasks) const
+void TaskManager::printTasks(const Folder* outputFolder) const
 {
-    //this block is for sidebar with 
+    std::vector<Task*> tasks = outputFolder->getTasks();
+
+    //this block is for sidebar with folders
     unsigned indent;
-    std::vector<std::string> sideBar = formFolderSideBar(indent);
+    std::vector<std::string> sideBar = formFolderSideBar(indent, outputFolder);
     unsigned k = 0, sideBarHeight = sideBar.size();
 
     int nameLength = 4;
@@ -511,32 +506,78 @@ std::array<int, 2> TaskManager::getIndents(int xLen, int yLen) const
     return {0, 0};
     //return {(terSize[1]-xLen)/2, (terSize[0]-yLen)/2};
 }
-std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength/*, Folder& openedFodler*/) const // indentLength is an empty variable to get indent for main table
+std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const // indentLength is an empty variable to get indent for main table
 {
     std::vector<std::string> ret;
-    std::string currentStr;
-    unsigned length = 0;
-    for(Folder* folder : Folders) if(folder->getName().length() > length) {length = folder->getName().length(); indentLength = length+1;}
+    std::string currentStr, color;
+    unsigned length = 9;
+    for(Folder* folder : Folders) if(folder->getName().length() > length) length = folder->getName().length();
+    indentLength = length+1;
+
+    // "All tasks" tab
+    if(openedFolder->getName()!="all-tasks") color = "\033[90m"; //grey if not selected
+    else color = "";
+    // upper border
+    currentStr = color + "┏";
+    for(int i=0; i<length; i++) currentStr += "━";
+    currentStr += "\033[0m";
+    ret.push_back(currentStr);
+    // body
+    currentStr = color + "┃" + "All tasks" + "\033[0m";
+    for(int i=0; i<length-9; i++) currentStr += " ";
+    ret.push_back(currentStr);
+    // bottom border
+    currentStr = color + "┗";
+    for(int i=0; i<length; i++) currentStr += "━";
+    currentStr += "\033[0m";
+    ret.push_back(currentStr);
+
+    // folder tabs
     for(Folder* folder : Folders)
     {
-        currentStr = "┏";
+        if(openedFolder->getName()!=folder->getName()) color = "\033[90m"; //grey if not selected
+        else color = "";
+        // upper border
+        currentStr = color + "┏";
         for(int i=0; i<length; i++) currentStr += "━";
+        currentStr += "\033[0m";
         ret.push_back(currentStr);
-        currentStr = "┃" + folder->getName();
+
+        // body
+        currentStr = color + "┃" + folder->getName() + "\033[0m";
         for(int i=0; i<length-(folder->getName().length()); i++) currentStr += " ";
         ret.push_back(currentStr);
+
+        // bottom border
+        currentStr = color + "┗";
+        for(int i=0; i<length; i++) currentStr += "━";
+        currentStr += "\033[0m";
+        ret.push_back(currentStr);
     }
-    currentStr = "┗";
-    for(int i=0; i<length; i++) currentStr += "━";
     return ret;
+}
+Folder TaskManager::allTasksFolder() const
+{
+    // create folder with all tasks
+    Folder allTasks("all-tasks");
+    for(Folder* folder : Folders) for (Task* task : folder->getTasks())
+    {
+        allTasks.addTask(task);
+    }
+    return allTasks;
 }
 void TaskManager::printInterface()
 {
     std::string command;
     clearScreen();
     printLogo();
-    if(displayMode) printAllTasks();
-    else printTasks(tasksForDisplay);
+    if(displayMode)
+    {
+        Folder allTasks = allTasksFolder();
+        Folder* allTasksPointer = &allTasks;
+        printTasks(allTasksPointer);
+    }
+    else printTasks(folderForDisplay);
     std::cout << currentNote << "console-todo> ";
     getline(std::cin, command);
     try {currentNote = ""; parseInput(command);}
