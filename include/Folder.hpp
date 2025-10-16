@@ -2,6 +2,7 @@
 #define FOLDER_H
 
 #include "Task.hpp"
+#include <algorithm>
 #include <vector>
 #include <memory>
 #include <string>

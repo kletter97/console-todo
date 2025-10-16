@@ -373,7 +373,7 @@ void TaskManager::printTasks(const Folder* outputFolder) const
     for(int i=0; i<11; ++i) std::cout << " ";
     std::cout << "┃" << std::endl;
 
-    for(int i=0; i<std::max<int>(tasks.size(), (int)((float)(sideBarHeight/3)*1.5-0.5)); i++)
+    for(int i=0; i<std::max<int>(tasks.size(), (int)((float)(sideBarHeight/3)*1.5)); i++)
     {
         if(k<sideBarHeight)
         {
