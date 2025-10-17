@@ -28,10 +28,6 @@ void Folder::removeTask(Task* targetTask)
 {
     Tasks.erase(std::find(Tasks.begin(), Tasks.end(), targetTask));
 }
-Task* Folder::getTask(const std::string taskName) const
-{
-    ; //
-}
 void Folder::transferTask(const Task& task)
 {
     ; //ToDo: transfer task to another folder

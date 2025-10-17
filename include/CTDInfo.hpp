@@ -30,9 +30,9 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
                 return "Description: \"display\" shows a table with your tasks according to arguments.\n\
                 Syntax: display <arguments>\n\
                 Arguments:\n\
-                \tall: displays all tasks grouped by folders;\n\
+                \tall: displays all tasks;\n\
                 \tfolder <folder_name>: displays all tasks in selected folder.\n\
-                NOTE: It's easier to use arrow-up and arrow-down keys to navigate (added in v0.2).\
+                NOTE: It's easier to use arrow-up and arrow-down keys to navigate (added in v0.2).\n\
                 NOTE: argument \"date\" is removed in v0.2.";
             }
             else if(command=="edit")
@@ -100,14 +100,7 @@ R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓
             }
             else return "Command is not found or there\'s no description for this command.";
         }
-        ~CTDInfo()
-        {
-            delete [] name;
-            delete [] version;
-            delete [] description;
-            delete [] publicationDate;
-            delete [] logo;
-        }
+        ~CTDInfo() {}
 };
 
 #endif
