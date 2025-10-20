@@ -14,6 +14,9 @@ class TaskManager
         bool displayMode; //< specifies type of output table:
                                     //true: all tasks arranged by folders (printAllTasks())
                                     //false: list of tasks related to folder or date (printTasks())
+        bool allOrUndoneMode; //< specifies whether to show all tasks or only undone tasks in "All/Undone" folder
+                                    //true: all tasks
+                                    //false: only undone tasks
         std::vector<Task*> tasksForDisplay; //<vector of tasks to display (set by command 'display <args>')
         Folder* folderForDisplay; //< folder to display
         std::string currentNote;  //<for displaying errors/notes

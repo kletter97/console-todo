@@ -11,7 +11,8 @@ namespace fs = std::filesystem;
 
 TaskManager::TaskManager()
 {
-    displayMode = true; //true for all tasks printing on start
+    displayMode = true;     //true for all tasks printing on start
+    allOrUndoneMode = true; //true for all tasks printing on start
     currentNote = "";
     try {readTasks();}
     catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
@@ -343,7 +344,9 @@ void TaskManager::printDelimeter(const int& nameLength, const int& mode) const
 }
 void TaskManager::printTasks(const Folder* outputFolder) const
 {
-    std::vector<Task*> tasks = outputFolder->getTasks();
+    std::vector<Task*> tasks;
+    if(allOrUndoneMode) tasks = outputFolder->getTasks();
+    else tasks = outputFolder->getUndoneTasks();
 
     //this block is for sidebar with folders
     unsigned indent;
@@ -450,22 +453,38 @@ std::array<int, 2> TaskManager::getIndents(int xLen, int yLen) const
 std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const // indentLength is an empty variable to get indent for main table
 {
     std::vector<std::string> ret;
-    std::string currentStr, color;
-    unsigned length = 9;
+    std::string currentStr, color, allColor, undoneColor;
+    unsigned length = 10;
     for(Folder* folder : Folders) if(folder->getName().length() > length) length = folder->getName().length();
     indentLength = length+1;
 
     // "All tasks" tab
-    if(!displayMode) color = "\033[90m"; //grey if not selected
+    if(!displayMode)
+    {
+        color = "\033[90m";                         //grey if not selected
+    }
     else color = "";
+
+    if(!allOrUndoneMode) 
+    {
+        allColor = "\033[90m";                  //grey if not selected "All" (allOrUndoneMode = false)
+        undoneColor = "\033[0m";                //white if selected "Undone"
+    }
+    else
+    {
+        allColor = "\033[0m";                  //white if selected "All" (allOrUndoneMode = true)
+        undoneColor = "\033[90m";              //grey if not selected "Undone"
+    }
+    
     // upper border
     currentStr = color + "┏";
     for(int i=0; i<length; i++) currentStr += "━";
     currentStr += "\033[0m";
     ret.push_back(currentStr);
     // body
-    currentStr = color + "┃" + "All tasks" + "\033[0m";
-    for(int i=0; i<length-9; i++) currentStr += " ";
+    if(color == "\033[90m") currentStr = color + "┃" + "All/Undone" + "\033[0m";
+    else currentStr = color + "┃" + allColor + "All" + "\033[90m" + "/" + undoneColor + "Undone" + "\033[0m";
+    for(int i=0; i<length-10; i++) currentStr += " ";
     ret.push_back(currentStr);
     // bottom border
     currentStr = color + "┗";
@@ -549,8 +568,8 @@ void TaskManager::printInterface()
                 {
                     case 65: nextOrPrevFolder(0); break; // Up arrow
                     case 66: nextOrPrevFolder(1); break; // Down arrow
-                    //case 67: break; // Right arrow (not using it for now)
-                    //case 68: break; // Left arrow (not using it for now)
+                    case 67: allOrUndoneMode = !allOrUndoneMode; break; // Right arrow
+                    case 68: allOrUndoneMode = !allOrUndoneMode; break; // Left arrow
                     default: break; // if not an arrow, return the character to input stream
                 }
             }
