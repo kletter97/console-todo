@@ -482,8 +482,8 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     currentStr += "\033[0m";
     ret.push_back(currentStr);
     // body
-    if(color == "\033[90m") currentStr = color + "┃" + "All/Undone" + "\033[0m";
-    else currentStr = color + "┃" + allColor + "All" + "\033[90m" + "/" + undoneColor + "Undone" + "\033[0m";
+    
+    currentStr = color + "┃" + allColor + "All" + "\033[90m" + "/" + undoneColor + "Undone" + "\033[0m";
     for(int i=0; i<length-10; i++) currentStr += " ";
     ret.push_back(currentStr);
     // bottom border
