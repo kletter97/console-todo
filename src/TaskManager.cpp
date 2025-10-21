@@ -342,7 +342,123 @@ void TaskManager::printDelimeter(const int& nameLength, const int& mode) const
     for(int i=0; i<20; ++i) std::cout << "━";
     std::cout << s[2] << std::endl;
 }
+
+std::string TaskManager::formDelimeter(const int& nameLength, const int& mode) const
+{
+    std::string ret;
+    std::array<std::string, 3> s;
+    switch(mode)
+    {
+        case 0: s = {"┏","┳","┓"}; break;
+        case 1: s = {"┣","╋","┫"}; break;
+        case 2: s = {"┗","┻","┛"}; break;
+        default: throw std::invalid_argument("printDelimeter: mode should be 0, 1 or 2, not "+std::to_string(mode));
+    }
+    ret += s[0];
+    for(int i=0; i<nameLength+2; ++i) ret += "━";
+    ret += s[1];
+    for(int i=0; i<8; ++i) ret += "━";
+    ret += s[1];
+    for(int i=0; i<20; ++i) ret += "━";
+    ret += s[1];
+    for(int i=0; i<20; ++i) ret += "━";
+    ret += s[2];
+    return ret;
+}
+
+std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder, const unsigned sideBarHeight) const
+{
+    std::vector<std::string> ret;
+    int nameLength = 4;
+
+    std::vector<Task*> tasks;
+    if(allOrUndoneMode) tasks = openedFolder->getTasks();
+    else tasks = openedFolder->getUndoneTasks();
+    
+    for(Task* task : tasks)
+    {
+        if(task->getName().length() > nameLength) nameLength = task->getName().length();
+    }
+    //Upper line creating
+    ret.push_back(formDelimeter(nameLength, 0));
+
+    std::string currentLine="";
+    //Upper bar creating, format: | Name | Status | Due | Created |
+    currentLine += "┃ Name ";
+    for(int i=0; i<nameLength-4; ++i) currentLine += " ";
+    currentLine += "┃ Status ┃ Due ";
+    for(int i=0; i<15; ++i) currentLine += " ";
+    currentLine += "┃ Created ";
+    for(int i=0; i<11; ++i) currentLine += " ";
+    currentLine += "┃";
+    ret.push_back(currentLine);
+
+    //Tasks lines creating
+    for(Task* task : tasks)
+    {
+        currentLine="";
+        // middle delimeter creating
+        ret.push_back(formDelimeter(nameLength, 1));
+        // if task is done, it'll be printed gray, if undone - standart (white)
+        if(task->getStatus()) currentLine += "\033[90m";
+        // name output
+        currentLine += "┃ " + task->getName();
+        for(int j=0; j<nameLength-task->getName().length()+1; j++) currentLine += " ";
+        // status output
+        currentLine += "┃ ";
+        if(task->getStatus()) currentLine += "Done   ";
+        else currentLine += "Undone ";
+        // deadline (endDate) output
+        currentLine += "┃ " + task->getEndDate()->print();
+        for(int j=0; j<19-(task->getEndDate()->print().length()); j++) currentLine += " ";
+        // creation date (startDate) output
+        currentLine += "┃ " + task->getStartDate()->print();
+        for(int j=0; j<19-(task->getStartDate()->print().length()); j++) currentLine += " ";
+        // final "┃" output
+        currentLine += "┃ \033[0m";
+        ret.push_back(currentLine);
+    }
+
+    // Filling with empty lines if sidebar is higher than tasks table
+    while(ret.size()<sideBarHeight+SIDE_BAR_VERTICAL_INDENT)
+    {
+        currentLine = "";
+        // middle delimeter creating
+        ret.push_back(formDelimeter(nameLength, 1));
+        // empty table line
+        currentLine += "┃";
+        for(int i=0; i<nameLength+2; ++i) currentLine += " ";
+        currentLine += "┃        ┃";
+        for(int i=0; i<20; ++i) currentLine += " ";
+        currentLine += "┃";
+        for(int i=0; i<20; ++i) currentLine += " ";
+        currentLine += "┃";
+        ret.push_back(currentLine);
+    }
+
+    //Bottom line creating
+    ret.push_back(formDelimeter(nameLength, 2));
+    return ret;
+}
+
 void TaskManager::printTasks(const Folder* outputFolder) const
+{
+    unsigned indent;
+    std::vector<std::string> sideBar = formFolderSideBar(indent, outputFolder);
+    std::vector<std::string> tasksTable = formTasksTable(outputFolder, sideBar.size());
+
+    for(int i=0; i<std::max<int>(sideBar.size(), tasksTable.size()); i++)
+    {
+        if(i<sideBar.size()+SIDE_BAR_VERTICAL_INDENT && i>=SIDE_BAR_VERTICAL_INDENT) std::cout << sideBar[i-SIDE_BAR_VERTICAL_INDENT] << tasksTable[i] << std::endl;
+        else 
+        {
+            for(int j=0; j<indent; j++) std::cout << " ";
+            std::cout << tasksTable[i] << std::endl;
+        }
+    }
+}
+
+void TaskManager::printTasksOld(const Folder* outputFolder) const
 {
     std::vector<Task*> tasks;
     if(allOrUndoneMode) tasks = outputFolder->getTasks();
@@ -376,7 +492,7 @@ void TaskManager::printTasks(const Folder* outputFolder) const
     for(int i=0; i<11; ++i) std::cout << " ";
     std::cout << "┃" << std::endl;
 
-    for(int i=0; i<std::max<int>(tasks.size(), (int)((float)(sideBarHeight/3)*1.5)); i++)
+    for(int i=0; i<std::max<int>(tasks.size(), std::max<int>((int)((float)(sideBarHeight/3)*1.5), getTerminalSize()[0])); i++)
     {
         if(k<sideBarHeight)
         {

@@ -10,6 +10,8 @@ class CTDInfo
         static constexpr const char* version = "0.3a";
         static constexpr const char* publicationDate = "21.10.2025";
         static constexpr const char* description = "-----\nConsoleToDo is a terminal program for tracking tasks. You can create, view, edit, sort and track your tasks.\n-----\nAuthor:\t\tgithub.com/kletter97\nSource code:\tgithub.com/kletter97/console-todo\n-----\nType 'help all' to get more information.";
+        static constexpr const unsigned logoHeight = 5;
+        static constexpr const unsigned logoWidth = 41;
         static constexpr const char* logo = \
 R"(┏━━━┓               ┏━┓ ┏━━━━━┓ ┏━━━┓ 
 ┃ ╻ ┣━━━┳━━━┳━━━┳━━━┫ ┣━┻━┓ ┏━┻━┫ ╻ ┣━━━┓
