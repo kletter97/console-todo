@@ -18,6 +18,7 @@ class Folder
         std::string getName() const;
         std::vector<Task*> getTasks() const;
         std::vector<Task*> getUndoneTasks() const;
+        std::vector<Task*> getDoneTasks() const;
         void setName(const std::string newName);
         void addTask(Task* newTask);
         void removeTask(Task* targetTask);

@@ -463,10 +463,14 @@ std::array<int, 2> TaskManager::getIndents(int xLen, int yLen) const
 std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const // indentLength is an empty variable to get indent for main table
 {
     std::vector<std::string> ret;
-    std::string currentStr, color, allColor, undoneColor;
-    unsigned length = 10;
-    for(Folder* folder : Folders) if(folder->getName().length() > length) length = folder->getName().length();
-    indentLength = length+1;
+    std::string currentStr, color, allColor, undoneColor, header;
+    unsigned length = 10, colorCodeCorr = ((std::string)COLOR_TEXT_HELP+(std::string)RESET_COLOR).length();
+    for(Folder* folder : Folders)
+    {
+        header = folder->getName()+" "+COLOR_TEXT_HELP+std::to_string((int)(folder->getDoneTasks().size()))+"/"+std::to_string((int)(folder->getTasks().size()))+RESET_COLOR;
+        if(header.length() > length) length = header.length();
+    }
+    indentLength = length+1-colorCodeCorr;
 
     // "All tasks" tab
     if(!displayMode)
@@ -488,39 +492,41 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     
     // upper border
     currentStr = color + "┏";
-    for(int i=0; i<length; i++) currentStr += "━";
+    for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
     currentStr += RESET_COLOR;
     ret.push_back(currentStr);
     // body
     
     currentStr = color + "┃" + allColor + "All" + COLOR_TEXT_DONE + "/" + undoneColor + "Undone" + RESET_COLOR;
-    for(int i=0; i<length-10; i++) currentStr += " ";
+    for(int i=0; i<length-10-colorCodeCorr; i++) currentStr += " ";
     ret.push_back(currentStr);
     // bottom border
     currentStr = color + "┗";
-    for(int i=0; i<length; i++) currentStr += "━";
+    for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
     currentStr += RESET_COLOR;
     ret.push_back(currentStr);
 
     // folder tabs
     for(Folder* folder : Folders)
     {
+        if(folder->getDoneTasks().size()==folder->getTasks().size()) header = folder->getName()+" "+COLOR_TEXT_SUCCESS+std::to_string((int)(folder->getDoneTasks().size()))+"/"+std::to_string((int)(folder->getTasks().size()))+RESET_COLOR;
+        else                                                         header = folder->getName()+" "+COLOR_TEXT_HELP+std::to_string((int)(folder->getDoneTasks().size()))+"/"+std::to_string((int)(folder->getTasks().size()))+RESET_COLOR;
         if(openedFolder->getName()!=folder->getName()) color = COLOR_TEXT_DONE; //grey if not selected
         else color = "";
         // upper border
         currentStr = color + "┏";
-        for(int i=0; i<length; i++) currentStr += "━";
+        for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
         currentStr += RESET_COLOR;
         ret.push_back(currentStr);
 
         // body
-        currentStr = color + "┃" + folder->getName() + RESET_COLOR;
-        for(int i=0; i<length-(folder->getName().length()); i++) currentStr += " ";
+        currentStr = color + "┃" + header + RESET_COLOR;
+        for(int i=0; i<length-(header.length()); i++) currentStr += " ";
         ret.push_back(currentStr);
 
         // bottom border
         currentStr = color + "┗";
-        for(int i=0; i<length; i++) currentStr += "━";
+        for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
         currentStr += RESET_COLOR;
         ret.push_back(currentStr);
     }

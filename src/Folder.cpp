@@ -25,6 +25,15 @@ std::vector<Task*> Folder::getUndoneTasks() const
     }
     return undoneTasks;
 }
+std::vector<Task*> Folder::getDoneTasks() const
+{
+    std::vector<Task*> doneTasks;
+    for(Task* task : Tasks)
+    {
+        if(task->getStatus()) doneTasks.push_back(task);
+    }
+    return doneTasks;
+}
 void Folder::setName(const std::string newName)
 {
     name = newName;
