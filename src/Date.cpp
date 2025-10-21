@@ -23,7 +23,7 @@ Date::Date(const unsigned inDay, const unsigned inMonth, const int inYear)
     setMonth(inMonth);
     setDay(inDay);
 
-    std::chrono::year_month_day ymd{std::chrono::year{inYear}, std::chrono::month{inMonth}, std::chrono::day{inDay}};
+    std::chrono::year_month_day ymd{std::chrono::year{inYear}, std::chrono::month{inMonth+1}, std::chrono::day{inDay}};
     std::chrono::sys_days sd = std::chrono::sys_days(ymd);
     std::chrono::weekday wd = std::chrono::weekday{sd};
     setWeekday((unsigned)wd.c_encoding());
