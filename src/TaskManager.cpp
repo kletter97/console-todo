@@ -322,26 +322,6 @@ void TaskManager::moveTaskToFolder(Task* targetTask, Folder* newFolder)
     newFolder->addTask(targetTask);
     oldFolder->removeTask(targetTask);
 }
-void TaskManager::printDelimeter(const int& nameLength, const int& mode) const
-{
-    std::array<std::string, 3> s;
-    switch(mode)
-    {
-        case 0: s = {"┏","┳","┓"}; break;
-        case 1: s = {"┣","╋","┫"}; break;
-        case 2: s = {"┗","┻","┛"}; break;
-        default: throw std::invalid_argument("printDelimeter: mode should be 0, 1 or 2, not "+std::to_string(mode));
-    }
-    std::cout << s[0];
-    for(int i=0; i<nameLength+2; ++i) std::cout << "━";
-    std::cout << s[1];
-    for(int i=0; i<8; ++i) std::cout << "━";
-    std::cout << s[1];
-    for(int i=0; i<20; ++i) std::cout << "━";
-    std::cout << s[1];
-    for(int i=0; i<20; ++i) std::cout << "━";
-    std::cout << s[2] << std::endl;
-}
 
 std::string TaskManager::formDelimeter(const int& nameLength, const int& mode) const
 {
@@ -456,95 +436,6 @@ void TaskManager::printTasks(const Folder* outputFolder) const
             std::cout << tasksTable[i] << std::endl;
         }
     }
-}
-
-void TaskManager::printTasksOld(const Folder* outputFolder) const
-{
-    std::vector<Task*> tasks;
-    if(allOrUndoneMode) tasks = outputFolder->getTasks();
-    else tasks = outputFolder->getUndoneTasks();
-
-    //this block is for sidebar with folders
-    unsigned indent;
-    std::vector<std::string> sideBar = formFolderSideBar(indent, outputFolder);
-    unsigned k = 0, sideBarHeight = sideBar.size();
-
-    int nameLength = 4;
-    for(Task* task : tasks)
-    {
-        if(task->getName().length() > nameLength) nameLength = task->getName().length();
-    }
-
-    // indent
-    for(int i=0; i<indent; i++) std::cout << " ";
-
-    printDelimeter(nameLength, 0);
-
-    // indent
-    for(int i=0; i<indent; i++) std::cout << " ";
-
-    //Upper bar output, format: | Name | Status | Due | Created |
-    std::cout << "┃ Name ";
-    for(int i=0; i<nameLength-4; ++i) std::cout << " ";
-    std::cout << "┃ Status ┃ Due ";
-    for(int i=0; i<15; ++i) std::cout << " ";
-    std::cout << "┃ Created ";
-    for(int i=0; i<11; ++i) std::cout << " ";
-    std::cout << "┃" << std::endl;
-
-    for(int i=0; i<std::max<int>(tasks.size(), std::max<int>((int)((float)(sideBarHeight/3)*1.5), getTerminalSize()[0])); i++)
-    {
-        if(k<sideBarHeight)
-        {
-            std::cout << sideBar[k];
-            k++;
-        }
-        else if(i<tasks.size()) for(int j=0; j<indent; j++) std::cout << " "; // indent
-        printDelimeter(nameLength, 1);
-        if(k<sideBarHeight)
-        {
-            std::cout << sideBar[k];
-            k++;
-        }
-        else for(int j=0; j<indent; j++) std::cout << " "; // indent
-        if(i<tasks.size())
-        {
-            // if task is done, it'll be printed gray, if undone - standart (white)
-            if(tasks[i]->getStatus()) std::cout << "\033[90m";
-            // name output
-            std::cout << "┃ " << tasks[i]->getName();
-            for(int j=0; j<nameLength-tasks[i]->getName().length()+1; j++) std::cout << " ";
-            // status output
-            std::cout << "┃ ";
-            if(tasks[i]->getStatus()) std::cout << "Done   ";
-            else std::cout << "Undone ";
-            // deadline (endDate) output
-            std::cout << "┃ " << tasks[i]->getEndDate()->print();
-            for(int j=0; j<19-(tasks[i]->getEndDate()->print().length()); j++) std::cout << " ";
-            // creation date (startDate) output
-            std::cout << "┃ " << tasks[i]->getStartDate()->print();
-            for(int j=0; j<19-(tasks[i]->getStartDate()->print().length()); j++) std::cout << " ";
-            // final "┃" output
-            std::cout << "┃ \033[0m" << std::endl;
-        }
-        else // empty table line if the sidebar is higher than main table
-        {
-            std::cout << "┃";
-            for(int i=0; i<nameLength+2; ++i) std::cout << " ";
-            std::cout << "┃        ┃";
-            for(int i=0; i<20; ++i) std::cout << " ";
-            std::cout << "┃";
-            for(int i=0; i<20; ++i) std::cout << " ";
-            std::cout << "┃" << std::endl;
-        }
-    }
-    if(k<sideBarHeight)
-    {
-        std::cout << sideBar[k];
-        k++;
-    }
-    else for(int j=0; j<indent; j++) std::cout << " "; // indent
-    printDelimeter(nameLength, 2);
 }
 void TaskManager::printLogo() const
 {
