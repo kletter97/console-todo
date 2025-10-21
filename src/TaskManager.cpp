@@ -64,7 +64,11 @@ void TaskManager::parseInput(const std::string& input)
     else if(words[0]=="edit")
     {
         Task* targetTask = getTaskByName(words[1]);
-        if(words[2]=="name") targetTask->setName(words[3]);
+        if(words[2]=="name")
+        {
+            targetTask->setName(words[3]);
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" renamed to " + words[3] + ".\n" + RESET_COLOR;
+        }
         else if(words[2]=="date")
         {
             if(words[3][0]=='+' || words[3][0]=='-') targetTask->getEndDate()->move(stoi(words[3]));
@@ -73,6 +77,7 @@ void TaskManager::parseInput(const std::string& input)
                 Date newDate((unsigned)stoi(words[3]), (unsigned)stoi(words[4])-1, stoi(words[5]));
                 targetTask->setEndDate(newDate);
             }
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" rescheduled for " + targetTask->getEndDate()->print() + ".\n" + RESET_COLOR;
         }
         else throw std::invalid_argument("unknown \"edit\" argument: "+words[1]);
     }
@@ -86,11 +91,13 @@ void TaskManager::parseInput(const std::string& input)
             Date* newDate = new Date((unsigned)stoi(words[4]), (unsigned)stoi(words[5])-1, stoi(words[6]));
             newTask->setEndDate(*newDate);
             targetFolder->addTask(newTask);
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[3] + "\" created in folder \"" + words[2] + "\".\n" + RESET_COLOR;
         }
         else if(words[1]=="folder")
         {
             Folder* newFolder = new Folder(words[2]);
             Folders.push_back(newFolder);
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Folder \"" + words[2] + "\" created.\n" + RESET_COLOR;
         }
         else throw std::invalid_argument("unknown \"new\" argument: "+words[1]);
     }
@@ -102,6 +109,7 @@ void TaskManager::parseInput(const std::string& input)
             Folder* targetFolder = getFolderByTask(targetTask);
             targetFolder->removeTask(targetTask);
             delete targetTask;
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[2] + "\" in folder \"" + words[2] + "\" deleted.\n" + RESET_COLOR;
         }
         else if(words[1]=="folder")
         {
@@ -110,6 +118,7 @@ void TaskManager::parseInput(const std::string& input)
             std::vector<Task*> targetFolderTasks = getTasksFromFolder(targetFolder);
             for(Task* deletableTask : targetFolderTasks) delete deletableTask;
             delete targetFolder;
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Folder \"" + words[2] + "\" deleted.\n" + RESET_COLOR;
         }
         else if(words[1]=="done")
         {
@@ -121,6 +130,7 @@ void TaskManager::parseInput(const std::string& input)
                     Folder* folder = getFolderByTask(task);
                     folder->removeTask(task);
                 }
+                currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: All done tasks were deleted.\n" + RESET_COLOR;
             }
             else
             {
@@ -130,6 +140,7 @@ void TaskManager::parseInput(const std::string& input)
                     Folder* folder = getFolderByTask(task);
                     folder->removeTask(task);
                 }
+                currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: All done tasks in folder \"" + words[2] + "\" were deleted.\n" + RESET_COLOR;
             }
         }
         else throw std::invalid_argument("unknown \"delete\" argument: "+words[1]);
@@ -139,16 +150,19 @@ void TaskManager::parseInput(const std::string& input)
         Task* targetTask = getTaskByName(words[1]);
         Folder* targetFolder = getFolderByName(words[2]);
         moveTaskToFolder(targetTask, targetFolder);
+        currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" moved to folder \"" + words[2] + "\".\n" + RESET_COLOR;
     }
     else if(words[0]=="done")
     {
         Task* targetTask = getTaskByName(words[1]);
         targetTask->setStatus(true);
+        currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" was marked as done.\n" + RESET_COLOR;
     }
     else if(words[0]=="undone")
     {
         Task* targetTask = getTaskByName(words[1]);
         targetTask->setStatus(false);
+        currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" was marked as undone.\n" + RESET_COLOR;
     }
     else if(words[0]=="about") currentNote = COLOR_TEXT_HELP + ctdinfo.getInfoText() + "\n" + RESET_COLOR;
     else if(words[0]=="help") currentNote = COLOR_TEXT_HELP + (std::string)ctdinfo.getHelp(words[1]) + "\n" + RESET_COLOR;
