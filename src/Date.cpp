@@ -9,17 +9,26 @@ Date::Date()
     auto now = std::chrono::system_clock::now();
     auto today = std::chrono::floor<std::chrono::days>(now);
     std::chrono::year_month_day ymd = std::chrono::year_month_day{today};
+    std::chrono::weekday wd{today};
+    setWeekday((unsigned)wd.c_encoding());
     setYear((int)ymd.year());
     setMonth((unsigned)ymd.month()-1);
     setDay((unsigned)ymd.day());
     monthsNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    weekdaysNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 }
 Date::Date(const unsigned inDay, const unsigned inMonth, const int inYear)
 {
     setYear(inYear);
     setMonth(inMonth);
     setDay(inDay);
+
+    std::chrono::year_month_day ymd{std::chrono::year{inYear}, std::chrono::month{inMonth}, std::chrono::day{inDay}};
+    std::chrono::sys_days sd = std::chrono::sys_days(ymd);
+    std::chrono::weekday wd = std::chrono::weekday{sd};
+    setWeekday((unsigned)wd.c_encoding());
     monthsNames = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    weekdaysNames = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 }
 unsigned Date::getDay() const
 {
@@ -32,6 +41,10 @@ unsigned Date::getMonth() const
 int Date::getYear() const
 {
     return year;
+}
+void Date::setWeekday(const unsigned newWeekday)
+{
+    weekday = newWeekday%7;
 }
 void Date::setDay(const unsigned newDay)
 {
@@ -55,22 +68,29 @@ void Date::setYear(const int newYear)
 }
 void Date::move(int days)
 {
+    setWeekday(weekday+days);
+
+    // if moving does not changes the month
     if(day+days>0 && day+days<=daysInMonths[month]) {day += days; return;}
+
+    // if moving increments the month 
     if(day+days>daysInMonths[month])
     {
         int diff = day+days-daysInMonths[month];
-        if(month!=11) {month++; day = diff; return;}
-        else {setYear(year+1); month = 0; day = diff; return;}
+        if(month!=11) {month++; day = diff; return;}                // if moving does not changes the year
+        else {setYear(year+1); month = 0; day = diff; return;}      // if moving increments the year
     }
+
+    // if moving decrements the month
     if(day+days<=0)
     {
         int diff = day+days;
-        if(month!=0) {month--; day = daysInMonths[month]-diff; return;}
-        else {setYear(year-1); month = 11; day = daysInMonths[month]-diff; return;}
+        if(month!=0) {month--; day = daysInMonths[month]-diff; return;}                 // if moving does not changes the year
+        else {setYear(year-1); month = 11; day = daysInMonths[month]-diff; return;}     // if moving decrements the year
     }
     return;
 }
 std::string Date::print()
 {
-    return monthsNames[month]+" "+std::to_string(day)+", "+std::to_string(year);
+    return weekdaysNames[weekday] + ", " + monthsNames[month].substr(0, 3) + " " + std::to_string(day) + ", " + std::to_string(year);
 }

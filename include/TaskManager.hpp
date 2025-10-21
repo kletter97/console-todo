@@ -11,7 +11,8 @@ class TaskManager
     private:
 
         // constants
-        static constexpr const unsigned SIDE_BAR_VERTICAL_INDENT = 2;    //< delay of printing sidebar compared to main table
+        static constexpr const unsigned SIDE_BAR_VERTICAL_INDENT = 2;   //< delay of printing sidebar compared to main table
+        static constexpr const unsigned DATE_MAX_LENGTH = 24;           //< maximum length of date (19 because of "Wednesday, Sep 19, 1985")
 
 
         std::vector<Folder*> Folders;   //< vector of all folders

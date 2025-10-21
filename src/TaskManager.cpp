@@ -339,9 +339,9 @@ std::string TaskManager::formDelimeter(const int& nameLength, const int& mode) c
     ret += s[1];
     for(int i=0; i<8; ++i) ret += "━";
     ret += s[1];
-    for(int i=0; i<20; ++i) ret += "━";
+    for(int i=0; i<DATE_MAX_LENGTH+1; ++i) ret += "━";
     ret += s[1];
-    for(int i=0; i<20; ++i) ret += "━";
+    for(int i=0; i<DATE_MAX_LENGTH+1; ++i) ret += "━";
     ret += s[2];
     return ret;
 }
@@ -367,9 +367,9 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
     currentLine += "┃ Name ";
     for(int i=0; i<nameLength-4; ++i) currentLine += " ";
     currentLine += "┃ Status ┃ Due ";
-    for(int i=0; i<15; ++i) currentLine += " ";
+    for(int i=0; i<DATE_MAX_LENGTH-4; ++i) currentLine += " ";
     currentLine += "┃ Created ";
-    for(int i=0; i<11; ++i) currentLine += " ";
+    for(int i=0; i<DATE_MAX_LENGTH-8; ++i) currentLine += " ";
     currentLine += "┃";
     ret.push_back(currentLine);
 
@@ -390,10 +390,10 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
         else currentLine += "Undone ";
         // deadline (endDate) output
         currentLine += "┃ " + task->getEndDate()->print();
-        for(int j=0; j<19-(task->getEndDate()->print().length()); j++) currentLine += " ";
+        for(int j=0; j<DATE_MAX_LENGTH-(task->getEndDate()->print().length()); j++) currentLine += " ";
         // creation date (startDate) output
         currentLine += "┃ " + task->getStartDate()->print();
-        for(int j=0; j<19-(task->getStartDate()->print().length()); j++) currentLine += " ";
+        for(int j=0; j<DATE_MAX_LENGTH-(task->getStartDate()->print().length()); j++) currentLine += " ";
         // final "┃" output
         currentLine += "┃ \033[0m";
         ret.push_back(currentLine);
@@ -409,9 +409,9 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
         currentLine += "┃";
         for(int i=0; i<nameLength+2; ++i) currentLine += " ";
         currentLine += "┃        ┃";
-        for(int i=0; i<20; ++i) currentLine += " ";
+        for(int i=0; i<DATE_MAX_LENGTH+1; ++i) currentLine += " ";
         currentLine += "┃";
-        for(int i=0; i<20; ++i) currentLine += " ";
+        for(int i=0; i<DATE_MAX_LENGTH+1; ++i) currentLine += " ";
         currentLine += "┃";
         ret.push_back(currentLine);
     }
