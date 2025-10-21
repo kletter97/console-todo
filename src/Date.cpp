@@ -94,3 +94,13 @@ std::string Date::print()
 {
     return weekdaysNames[weekday] + ", " + monthsNames[month].substr(0, 3) + " " + std::to_string(day) + ", " + std::to_string(year);
 }
+
+bool Date::operator< (Date another)
+{
+    return (year<another.getYear()) || ((year==another.getYear()) && ((month<another.getMonth()) || ((month==another.getMonth()) && (day<another.getDay()))));
+}
+
+bool Date::operator> (Date another)
+{
+    return (year>another.getYear()) || ((year==another.getYear()) && ((month>another.getMonth()) || ((month==another.getMonth()) && (day>another.getDay()))));
+}

@@ -27,6 +27,9 @@ class Date
         void setYear(const int newYear);
         void move(const int days);
         std::string print();
+
+        bool operator< (Date another);
+        bool operator> (Date another);
 };
 
 #endif //DATE_H

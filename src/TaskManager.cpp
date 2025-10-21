@@ -354,6 +354,8 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
     std::vector<Task*> tasks;
     if(allOrUndoneMode) tasks = openedFolder->getTasks();
     else tasks = openedFolder->getUndoneTasks();
+
+    Date todayDate;
     
     for(Task* task : tasks)
     {
@@ -381,6 +383,7 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
         ret.push_back(formDelimeter(nameLength, 1));
         // if task is done, it'll be printed gray, if undone - standart (white)
         if(task->getStatus()) currentLine += "\033[90m";
+        else if(todayDate > *(task->getEndDate())) currentLine += "\033[31m";
         // name output
         currentLine += "┃ " + task->getName();
         for(int j=0; j<nameLength-task->getName().length()+1; j++) currentLine += " ";
