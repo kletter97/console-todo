@@ -18,7 +18,7 @@ TaskManager::TaskManager()
     catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
     if(Folders.size()==0)
     {
-        currentNote = "\033[33mNOTE: No tasks found, created an empty folder \"General\".\n\033[0m";
+        currentNote = COLOR_TEXT_NOTE + (std::string)"NOTE: No tasks found, created an empty folder \"General\".\n" + RESET_COLOR;
         Folder* General = new Folder("General");
         Folders.push_back(General);
     }
@@ -150,8 +150,8 @@ void TaskManager::parseInput(const std::string& input)
         Task* targetTask = getTaskByName(words[1]);
         targetTask->setStatus(false);
     }
-    else if(words[0]=="about") currentNote = "\033[94m" + ctdinfo.getInfoText() + "\n\033[0m";
-    else if(words[0]=="help") currentNote = "\033[94m" + (std::string)ctdinfo.getHelp(words[1]) + "\n\033[0m";
+    else if(words[0]=="about") currentNote = COLOR_TEXT_HELP + ctdinfo.getInfoText() + "\n" + RESET_COLOR;
+    else if(words[0]=="help") currentNote = COLOR_TEXT_HELP + (std::string)ctdinfo.getHelp(words[1]) + "\n" + RESET_COLOR;
     else if(words[0]=="exit")
     {
         std::cout << "saving your tasks..." << "\n";
@@ -382,8 +382,8 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
         // middle delimeter creating
         ret.push_back(formDelimeter(nameLength, 1));
         // if task is done, it'll be printed gray, if undone - standart (white)
-        if(task->getStatus()) currentLine += "\033[90m";
-        else if(todayDate > *(task->getEndDate())) currentLine += "\033[31m";
+        if(task->getStatus()) currentLine += COLOR_TEXT_DONE;
+        else if(todayDate > *(task->getEndDate())) currentLine += COLOR_TEXT_OVERDUE;
         // name output
         currentLine += "┃ " + task->getName();
         for(int j=0; j<nameLength-task->getName().length()+1; j++) currentLine += " ";
@@ -398,7 +398,7 @@ std::vector<std::string> TaskManager::formTasksTable(const Folder* openedFolder,
         currentLine += "┃ " + task->getStartDate()->print();
         for(int j=0; j<DATE_MAX_LENGTH-(task->getStartDate()->print().length()); j++) currentLine += " ";
         // final "┃" output
-        currentLine += "┃ \033[0m";
+        currentLine += "┃" + (std::string)RESET_COLOR;
         ret.push_back(currentLine);
     }
 
@@ -471,57 +471,57 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     // "All tasks" tab
     if(!displayMode)
     {
-        color = "\033[90m";                         //grey if not selected
+        color = COLOR_TEXT_DONE;                         //grey if not selected
     }
     else color = "";
 
     if(!allOrUndoneMode) 
     {
-        allColor = "\033[90m";                  //grey if not selected "All" (allOrUndoneMode = false)
-        undoneColor = "\033[0m";                //white if selected "Undone"
+        allColor = COLOR_TEXT_DONE;                  //grey if not selected "All" (allOrUndoneMode = false)
+        undoneColor = RESET_COLOR;                //white if selected "Undone"
     }
     else
     {
-        allColor = "\033[0m";                  //white if selected "All" (allOrUndoneMode = true)
-        undoneColor = "\033[90m";              //grey if not selected "Undone"
+        allColor = RESET_COLOR;                  //white if selected "All" (allOrUndoneMode = true)
+        undoneColor = COLOR_TEXT_DONE;              //grey if not selected "Undone"
     }
     
     // upper border
     currentStr = color + "┏";
     for(int i=0; i<length; i++) currentStr += "━";
-    currentStr += "\033[0m";
+    currentStr += RESET_COLOR;
     ret.push_back(currentStr);
     // body
     
-    currentStr = color + "┃" + allColor + "All" + "\033[90m" + "/" + undoneColor + "Undone" + "\033[0m";
+    currentStr = color + "┃" + allColor + "All" + COLOR_TEXT_DONE + "/" + undoneColor + "Undone" + RESET_COLOR;
     for(int i=0; i<length-10; i++) currentStr += " ";
     ret.push_back(currentStr);
     // bottom border
     currentStr = color + "┗";
     for(int i=0; i<length; i++) currentStr += "━";
-    currentStr += "\033[0m";
+    currentStr += RESET_COLOR;
     ret.push_back(currentStr);
 
     // folder tabs
     for(Folder* folder : Folders)
     {
-        if(openedFolder->getName()!=folder->getName()) color = "\033[90m"; //grey if not selected
+        if(openedFolder->getName()!=folder->getName()) color = COLOR_TEXT_DONE; //grey if not selected
         else color = "";
         // upper border
         currentStr = color + "┏";
         for(int i=0; i<length; i++) currentStr += "━";
-        currentStr += "\033[0m";
+        currentStr += RESET_COLOR;
         ret.push_back(currentStr);
 
         // body
-        currentStr = color + "┃" + folder->getName() + "\033[0m";
+        currentStr = color + "┃" + folder->getName() + RESET_COLOR;
         for(int i=0; i<length-(folder->getName().length()); i++) currentStr += " ";
         ret.push_back(currentStr);
 
         // bottom border
         currentStr = color + "┗";
         for(int i=0; i<length; i++) currentStr += "━";
-        currentStr += "\033[0m";
+        currentStr += RESET_COLOR;
         ret.push_back(currentStr);
     }
     return ret;
@@ -597,7 +597,7 @@ void TaskManager::printInterface()
         else if(k == 13 || k == 10) // enter
         {
             try {currentNote = ""; parseInput(command);}
-            catch (const std::invalid_argument& e) {currentNote = "\033[31mERROR: " + (std::string)e.what() + "\n\033[0m";}
+            catch (const std::invalid_argument& e) {currentNote = COLOR_TEXT_ERROR + (std::string)"ERROR: " + (std::string)e.what() + "\n" + RESET_COLOR;}
             return;
         }
         else // regular symbol, add to command and show in terminal

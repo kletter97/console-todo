@@ -13,6 +13,12 @@ class TaskManager
         // constants
         static constexpr const unsigned SIDE_BAR_VERTICAL_INDENT = 2;   //< delay of printing sidebar compared to main table
         static constexpr const unsigned DATE_MAX_LENGTH = 24;           //< maximum length of date (19 because of "Wednesday, Sep 19, 1985")
+        static constexpr const char* COLOR_TEXT_ERROR = "\033[31m";
+        static constexpr const char* COLOR_TEXT_NOTE = "\033[33m";
+        static constexpr const char* COLOR_TEXT_HELP = "\033[94m";
+        static constexpr const char* COLOR_TEXT_DONE = "\033[90m";
+        static constexpr const char* COLOR_TEXT_OVERDUE = "\033[31m";
+        static constexpr const char* RESET_COLOR = "\033[0m";
 
 
         std::vector<Folder*> Folders;   //< vector of all folders
