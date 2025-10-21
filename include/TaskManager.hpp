@@ -9,6 +9,11 @@
 class TaskManager
 {
     private:
+
+        // constants
+        static constexpr const unsigned SIDE_BAR_VERTICAL_INDENT = 2;    //< delay of printing sidebar compared to main table
+
+
         std::vector<Folder*> Folders;   //< vector of all folders
         CTDInfo ctdinfo; //< object CTDInfo, contains text assets, such as logo, help notes, etc
         bool displayMode; //< specifies type of output table:
@@ -29,6 +34,16 @@ class TaskManager
          *              //2 - bottom delimeter (with corners ┗ ┛)
          */
         void printDelimeter(const int& nameLength, const int& mode) const;
+
+        /**
+         * @brief same as printDelimeter but returns string instead of printing (printDelimeter may be deprecated later)
+         * @param nameLength - length of the longest task name, used to calculate table width
+         * @param mode - specifies type of delimeter:
+         *              //0 - upper delimeter (with corners ┏ ┓)
+         *              //1 - middle delimeter (with corners ┣ ┫)
+         *              //2 - bottom delimeter (with corners ┗ ┛)
+         */
+        std::string formDelimeter(const int& nameLength, const int& mode) const;
 
         /**
          * @brief reads tasks from "tasks/" folder on computer, creates Folders and Tasks according to data in files
@@ -126,11 +141,14 @@ class TaskManager
          */
         void printTasks(const Folder* outputFolder) const;
 
+        void printTasksOld(const Folder* outputFolder) const;
+
         //Utility functions for interface
         void printLogo() const;
         void clearScreen() const;
         std::array<int, 2> getTerminalSize() const;
         std::array<int, 2> getIndents(int xLen, int yLen = 0) const;
+        std::vector<std::string> formTasksTable(const Folder* openedFolder, const unsigned sideBarHeight) const;
         std::vector<std::string> formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const;
         Folder allTasksFolder() const;
         void nextOrPrevFolder(bool mode);
