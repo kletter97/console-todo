@@ -344,7 +344,9 @@ void TaskManager::printDelimeter(const int& nameLength, const int& mode) const
 }
 void TaskManager::printTasks(const Folder* outputFolder) const
 {
-    std::vector<Task*> tasks = outputFolder->getTasks();
+    std::vector<Task*> tasks;
+    if(allOrUndoneMode) tasks = outputFolder->getTasks();
+    else tasks = outputFolder->getUndoneTasks();
 
     //this block is for sidebar with folders
     unsigned indent;
