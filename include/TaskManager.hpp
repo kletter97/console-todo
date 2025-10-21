@@ -25,18 +25,9 @@ class TaskManager
         std::vector<Task*> tasksForDisplay; //<vector of tasks to display (set by command 'display <args>')
         Folder* folderForDisplay; //< folder to display
         std::string currentNote;  //<for displaying errors/notes
-        /**
-         * @brief prints delimeter line for output table
-         * @param nameLength - length of the longest task name, used to calculate table width
-         * @param mode - specifies type of delimeter:
-         *              //0 - upper delimeter (with corners ┏ ┓)
-         *              //1 - middle delimeter (with corners ┣ ┫)
-         *              //2 - bottom delimeter (with corners ┗ ┛)
-         */
-        void printDelimeter(const int& nameLength, const int& mode) const;
 
         /**
-         * @brief same as printDelimeter but returns string instead of printing (printDelimeter may be deprecated later)
+         * @brief forms delimeter line for tasks table
          * @param nameLength - length of the longest task name, used to calculate table width
          * @param mode - specifies type of delimeter:
          *              //0 - upper delimeter (with corners ┏ ┓)
@@ -140,8 +131,6 @@ class TaskManager
          * @param tasks - vector of pointers to tasks to be printed (formed by getTasksByDate() or getTasksFromFolder() methods)
          */
         void printTasks(const Folder* outputFolder) const;
-
-        void printTasksOld(const Folder* outputFolder) const;
 
         //Utility functions for interface
         void printLogo() const;
