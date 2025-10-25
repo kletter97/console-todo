@@ -67,7 +67,7 @@ void TaskManager::parseInput(const std::string& input)
         if(words[2]=="name")
         {
             targetTask->setName(words[3]);
-            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" renamed to " + words[3] + ".\n" + RESET_COLOR;
+            currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" renamed to \"" + words[3] + "\".\n" + RESET_COLOR;
         }
         else if(words[2]=="date")
         {
@@ -80,6 +80,12 @@ void TaskManager::parseInput(const std::string& input)
             currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Task \"" + words[1] + "\" rescheduled for " + targetTask->getEndDate()->print() + ".\n" + RESET_COLOR;
         }
         else throw std::invalid_argument("unknown \"edit\" argument: "+words[1]);
+    }
+    else if(words[0]=="rename")
+    {
+        Folder* targetFolder = getFolderByName(words[1]);
+        targetFolder->setName(words[2]);
+        currentNote = COLOR_TEXT_SUCCESS + (std::string)"SUCCESS: Folder \"" + words[1] + "\" renamed to \"" + words[2] + "\".\n" + RESET_COLOR;
     }
     else if(words[0]=="new")
     {
