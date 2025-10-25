@@ -600,7 +600,7 @@ void TaskManager::printInterface()
                     case 66: nextOrPrevFolder(1); break; // Down arrow
                     case 67: allOrUndoneMode = !allOrUndoneMode; break; // Right arrow
                     case 68: allOrUndoneMode = !allOrUndoneMode; break; // Left arrow
-                    default: break; // if not an arrow, return the character to input stream
+                    default: currentNote = std::to_string(k); break; // if not an arrow, return the character to input stream
                 }
             }
             //else ungetc(k, stdin); // if not [, return the character to input stream
@@ -620,6 +620,7 @@ void TaskManager::printInterface()
             catch (const std::invalid_argument& e) {currentNote = COLOR_TEXT_ERROR + (std::string)"ERROR: " + (std::string)e.what() + "\n" + RESET_COLOR;}
             return;
         }
+        else if(k == 9) {allOrUndoneMode = !allOrUndoneMode; return;}
         else // regular symbol, add to command and show in terminal
         {
             command.push_back((char)k);
