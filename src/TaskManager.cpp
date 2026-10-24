@@ -11,8 +11,9 @@ namespace fs = std::filesystem;
 
 TaskManager::TaskManager()
 {
-    displayMode = true;     //true for all tasks printing on start
+    isAllTasksFolder = true;     //true for all tasks printing on start
     allOrUndoneMode = true; //true for all tasks printing on start
+    isDateFolder = false;
     currentNote = "";
     try {readTasks();}
     catch(...) {std::cout << "ERROR: Tasks files are corrupted, reading failed. Program has been stopped.\n"; std::exit(1);}
@@ -26,7 +27,7 @@ TaskManager::TaskManager()
 TaskManager::TaskManager(bool mode)
 {
     // just for testing the class without import/export tasks (those methods are not created so far)
-    displayMode = true; //true for all tasks printing on start
+    isAllTasksFolder = true; //true for all tasks printing on start
     currentNote = "";
     Task* testTask = new Task;
     Folder* testFolder1 = new Folder;
@@ -51,10 +52,10 @@ void TaskManager::parseInput(const std::string& input)
     words.push_back(input.substr(oldi+1));
     if(words[0]=="display")
     {
-        if(words[1]=="all") displayMode=true;
+        if(words[1]=="all") isAllTasksFolder=true;
         else if(words[1]=="date" || words[1]=="folder")
         {
-            displayMode = false;
+            isAllTasksFolder = false;
             //if(words[1]=="date") tasksForDisplay = getTasksByDate(stoi(words[2]), stoi(words[3])-1, stoi(words[4]));
             //else
             if(words[1]=="folder") folderForDisplay = getFolderByName(words[2]);
@@ -323,6 +324,18 @@ std::vector<Task*> TaskManager::getTasksByDate(const int& day, const int& month,
     }
     return ret;
 }
+std::vector<Task*> TaskManager::getTasksByDate(const Date* targetDate) const
+{
+    std::vector<Task*> ret;
+    for(Folder* folder : Folders)
+    {
+        for(Task* task : folder->getTasks())
+        {
+            if(*(task->getEndDate()) == *(targetDate)) ret.push_back(task);
+        }
+    }
+    return ret;
+}
 std::vector<Task*> TaskManager::getTasksFromFolder(const std::string& folderName) const
 {
     for(Folder* folder : Folders)
@@ -483,7 +496,7 @@ std::array<int, 2> TaskManager::getIndents(int xLen, int yLen) const
 std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const // indentLength is an empty variable to get indent for main table
 {
     std::vector<std::string> ret;
-    std::string currentStr, color, allColor, undoneColor, header;
+    std::string currentStr, color, allColor, undoneColor, header, dateColor;
     unsigned length = 10, colorCodeCorr = ((std::string)COLOR_TEXT_HELP+(std::string)RESET_COLOR).length();
     for(Folder* folder : Folders)
     {
@@ -492,8 +505,8 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     }
     indentLength = length+1-colorCodeCorr;
 
-    // "All tasks" tab
-    if(!displayMode)
+    // "All/undone" tab
+    if(!isAllTasksFolder)
     {
         color = COLOR_TEXT_DONE;                         //grey if not selected
     }
@@ -526,6 +539,22 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     currentStr += RESET_COLOR;
     ret.push_back(currentStr);
 
+    // upper border
+    currentStr = dateColor + "┏";
+    for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
+    currentStr += RESET_COLOR;
+    ret.push_back(currentStr);
+    // body
+    header = std::to_string(dateForDateFolder.getDay()) + "." + std::to_string(dateForDateFolder.getMonth()+1) + "." + std::to_string(dateForDateFolder.getYear());
+    currentStr = dateColor + "┃" + header + RESET_COLOR;
+    for(int i=0; i<length-header.length()-colorCodeCorr; i++) currentStr += " ";
+    ret.push_back(currentStr);
+    // bottom border
+    currentStr = dateColor + "┗";
+    for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
+    currentStr += RESET_COLOR;
+    ret.push_back(currentStr);
+
     // folder tabs
     for(Folder* folder : Folders)
     {
@@ -552,7 +581,7 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     }
     return ret;
 }
-Folder TaskManager::allTasksFolder() const
+Folder TaskManager::formAllTasksFolder() const
 {
     // create folder with all tasks
     Folder allTasks("serviceAllTasksFolder");
@@ -562,17 +591,31 @@ Folder TaskManager::allTasksFolder() const
     }
     return allTasks;
 }
+Folder TaskManager::formDateFolder() const
+{
+    // create folder with all tasks by date
+    Folder dateFolderTasksFolder("serviceDateFolderTasksFolder");
+    std::vector<Task*> dateFolderTasks = getTasksByDate(&dateForDateFolder); 
+    for (Task* task : dateFolderTasks)
+    {
+        dateFolderTasksFolder.addTask(task);
+    }
+    return dateFolderTasksFolder;
+}
 void TaskManager::nextOrPrevFolder(bool mode)
 {
     auto it = std::find(Folders.begin(), Folders.end(), folderForDisplay);
     if(mode) // next folder
     {
-        if(displayMode) {folderForDisplay = Folders[0]; displayMode = false;}
+        if(isAllTasksFolder) {folderForDisplay = Folders[0]; isAllTasksFolder = false; isDateFolder = true;}
+        else if(isDateFolder) {folderForDisplay = Folders[0]; isAllTasksFolder = false; isDateFolder = false;}
         else if(it != Folders.end() && it + 1 != Folders.end()) folderForDisplay = *(it + 1);
     }
     else // previous folder
     {
-        if(folderForDisplay == Folders[0]) displayMode = true;
+        if(isDateFolder) {isDateFolder = false; isAllTasksFolder = true;}
+        else if(isAllTasksFolder) {}
+        else if(folderForDisplay == Folders[0]) {isDateFolder = true; isAllTasksFolder = false;}
         else if(it != Folders.begin()) folderForDisplay = *(it - 1);
     }
 }
@@ -581,11 +624,17 @@ void TaskManager::printInterface()
     std::string command;
     clearScreen();
     printLogo();
-    if(displayMode)
+    if(isAllTasksFolder)
     {
-        Folder allTasks = allTasksFolder();
+        Folder allTasks = formAllTasksFolder();
         Folder* allTasksPointer = &allTasks;
         printTasks(allTasksPointer);
+    }
+    else if(isDateFolder)
+    {
+        Folder dateFolder = formDateFolder();
+        Folder* dateFolderPointer = &dateFolder;
+        printTasks(dateFolderPointer);
     }
     else printTasks(folderForDisplay);
     std::cout << currentNote << "console-todo> ";
@@ -604,8 +653,8 @@ void TaskManager::printInterface()
                 {
                     case 65: nextOrPrevFolder(0); break; // Up arrow
                     case 66: nextOrPrevFolder(1); break; // Down arrow
-                    case 67: allOrUndoneMode = !allOrUndoneMode; break; // Right arrow
-                    case 68: allOrUndoneMode = !allOrUndoneMode; break; // Left arrow
+                    case 67: dateForDateFolder.move(1); break; // Right arrow
+                    case 68: dateForDateFolder.move(-1); break; // Left arrow
                     default: currentNote = std::to_string(k); break; // if not an arrow, return the character to input stream
                 }
             }

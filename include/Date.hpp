@@ -28,8 +28,9 @@ class Date
         void move(const int days);
         std::string print();
 
-        bool operator< (Date another);
-        bool operator> (Date another);
+        bool operator< (const Date& another) const;
+        bool operator> (const Date& another) const;
+        bool operator== (const Date& another) const;
 };
 
 #endif //DATE_H

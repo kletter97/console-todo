@@ -12,7 +12,7 @@ class TaskManager
 
         // constants
         static constexpr const unsigned SIDE_BAR_VERTICAL_INDENT = 2;   //< delay of printing sidebar compared to main table
-        static constexpr const unsigned DATE_MAX_LENGTH = 24;           //< maximum length of date (19 because of "Wednesday, Sep 19, 1985")
+        static constexpr const unsigned DATE_MAX_LENGTH = 24;           //< maximum length of date (24 because of "Wednesday, Sep 19, 1985")
         static constexpr const char* COLOR_TEXT_ERROR = "\033[31m";
         static constexpr const char* COLOR_TEXT_SUCCESS = "\033[32m";
         static constexpr const char* COLOR_TEXT_NOTE = "\033[33m";
@@ -24,15 +24,15 @@ class TaskManager
 
         std::vector<Folder*> Folders;   //< vector of all folders
         CTDInfo ctdinfo; //< object CTDInfo, contains text assets, such as logo, help notes, etc
-        bool displayMode; //< specifies type of output table:
-                                    //true: all tasks arranged by folders (printAllTasks())
-                                    //false: list of tasks related to folder or date (printTasks())
+        bool isAllTasksFolder; //< has user chosen "all/undone" folder or not.
         bool allOrUndoneMode; //< specifies whether to show all tasks or only undone tasks in "All/Undone" folder
                                     //true: all tasks
                                     //false: only undone tasks
+        bool isDateFolder; //< has user chosen date folder or not.
         std::vector<Task*> tasksForDisplay; //<vector of tasks to display (set by command 'display <args>')
         Folder* folderForDisplay; //< folder to display
-        std::string currentNote;  //<for displaying errors/notes
+        std::string currentNote;  //< for displaying errors/notes
+        Date dateForDateFolder;   //< for date folder
 
         /**
          * @brief forms delimeter line for tasks table
@@ -111,6 +111,13 @@ class TaskManager
         std::vector<Task*> getTasksByDate(const int& day, const int& month, const int& year) const;
 
         /**
+        * @brief retrieves tasks scheduled for a specific date
+        * @param targetDate - date, which tasks scheduled by
+        * @return vector of pointers to tasks scheduled for the specified date
+        */
+        std::vector<Task*> getTasksByDate(const Date* targetDate) const;
+
+        /**
         * @brief retrieves tasks from a specific folder by its name
         * @param folderName - name of the folder to retrieve tasks from
         * @return vector of pointers to tasks in the specified folder
@@ -147,7 +154,8 @@ class TaskManager
         std::array<int, 2> getIndents(int xLen, int yLen = 0) const;
         std::vector<std::string> formTasksTable(const Folder* openedFolder, const unsigned sideBarHeight) const;
         std::vector<std::string> formFolderSideBar(unsigned& indentLength, const Folder* openedFolder) const;
-        Folder allTasksFolder() const;
+        Folder formAllTasksFolder() const;
+        Folder formDateFolder() const;
         void nextOrPrevFolder(bool mode);
     public:
         /**
