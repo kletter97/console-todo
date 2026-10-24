@@ -181,6 +181,7 @@ void TaskManager::parseInput(const std::string& input)
         std::exit(0);
     }
     else throw std::invalid_argument("unknown command: "+words[0]);
+    saveTasks();
 }
 void TaskManager::readTasks()
 {
