@@ -540,6 +540,17 @@ std::vector<std::string> TaskManager::formFolderSideBar(unsigned& indentLength, 
     currentStr += RESET_COLOR;
     ret.push_back(currentStr);
 
+    // date folder
+
+    if(!isDateFolder) 
+    {
+        dateColor = COLOR_TEXT_DONE;                   //grey if date folder is not selected (isDateFolder = false)
+    }
+    else
+    {
+        dateColor = "";                                //white (basic) if date folder is not selected (isDateFolder = true)
+    }
+
     // upper border
     currentStr = dateColor + "┏";
     for(int i=0; i<length-colorCodeCorr; i++) currentStr += "━";
